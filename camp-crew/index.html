@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Camp Crew 2027</title>
+<base target="_top">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+/* VOICE: friendly, sunny, practical — a parents' shared planning board
+   IDEA: the camp bunk-assignment board pinned up at summer camp
+   PICTURE: deadline strip, then a searchable board of camp cards with the kids' name tags on them
+   COLOUR and TYPE: playful rainbow (pastel rainbow header, rainbow title, each tab and week its own colour); provider colours stay fixed; Fredoka headings, Nunito body
+   LAYOUT: teal header with upcoming deadlines, kid tags, tabs: Find camps / Our crew / Booking guide / Notes */
+:root{--bg:#fffdf8;--card:#fff;--ink:#1f2333;--muted:#5d6273;--lake:#5b3fd6;--lake2:#efeaff;--rb:linear-gradient(90deg,#ff4d6d,#ff8a3d,#ffc83d,#3ec46d,#2f9bff,#8b5cf6);--sun:#ffcf3f;--coral:#ff6b4a;--line:#e7dfcf}
+:root{color-scheme:light}
+*{box-sizing:border-box;min-width:0}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 Nunito,system-ui,sans-serif;overflow-x:clip}
+h1,h2,h3,h4{font-family:Fredoka,Nunito,sans-serif;font-weight:600;line-height:1.15;margin:0}
+a{color:inherit}
+.band{padding:clamp(18px,3vw,36px) max(4vw,14px)}
+.wrap{max-width:1240px;margin:0 auto}
+header{background:linear-gradient(115deg,#ffd9de 0%,#ffe6cc 20%,#fff5bf 40%,#d6f5dc 60%,#d4ecff 80%,#e9e0ff 100%);color:var(--ink);position:relative}
+header::before{content:'';position:absolute;inset:0 0 auto 0;height:8px;background:var(--rb)}
+header h1{background:linear-gradient(90deg,#e8173f,#f06a00,#d99a00,#1f9d4c,#1b7fe0,#7a3ff2);-webkit-background-clip:text;background-clip:text;color:transparent}
+header p{opacity:1;color:#3b4052}
+header h1{font-size:clamp(30px,5vw,46px)}
+header p{margin:6px 0 0;opacity:.9;max-width:66ch}
+.dlwrap{margin-top:22px;background:rgba(255,255,255,.9);color:#1f2333;box-shadow:0 4px 18px rgba(31,35,51,.08);border-radius:18px;padding:clamp(14px,2.5vw,24px)}
+.dlhead{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:6px 16px;margin-bottom:10px}
+.dlhead h2{font-size:26px;display:inline}
+summary.dlhead{cursor:pointer;list-style:none;align-items:center}
+summary.dlhead::-webkit-details-marker{display:none}
+.dltitle{display:inline-flex;align-items:center;gap:10px}
+.chev{width:12px;height:12px;border-right:3px solid #7a3ff2;border-bottom:3px solid #7a3ff2;transform:rotate(45deg);transition:transform .15s;margin-top:-6px}
+.dlwrap:not([open]) .chev{transform:rotate(-45deg);margin-top:0}
+.dlnext{font-size:14px;color:#3d4b4e;flex:1 1 260px}
+.dlwrap[open] .dlnext{display:none}
+.dlwrap:not([open]) .legend{display:none}
+.dlwrap:not([open]) .dlhead{margin-bottom:0}
+.legend{display:flex;flex-wrap:wrap;gap:6px}
+.prov{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:2px 10px;font-size:13px;font-weight:700;color:#fff;background:var(--pc);white-space:nowrap}
+.dlrow{border-top:1px solid #e7dfcf}
+.dlrow summary{list-style:none;cursor:pointer;display:grid;grid-template-columns:150px auto minmax(0,1fr) auto;gap:10px;align-items:center;padding:12px 6px;min-height:48px}
+.dlrow summary::-webkit-details-marker{display:none}
+.dlrow summary:hover{background:#f6efe0;border-radius:10px}
+.dlrow.next>summary{background:#fff3c4;border-radius:10px}
+.dlday{font:600 17px Fredoka,sans-serif;white-space:nowrap}
+.dlt{font-weight:700;font-size:15px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dlrow[open] .dlt{white-space:normal}
+.dlwhen{font-size:13px;color:#5c6b6e;white-space:nowrap}
+.dlwhen::after{content:'';display:inline-block;width:7px;height:7px;border-right:2px solid #5c6b6e;border-bottom:2px solid #5c6b6e;transform:rotate(45deg);margin:0 4px 3px 10px;transition:transform .15s}
+.dlrow[open] .dlwhen::after{transform:rotate(-135deg);margin-bottom:-1px}
+.soon{color:#b3261e;font-weight:700}
+.dlbody{padding:2px 6px 16px 166px;display:grid;gap:8px}
+.dlbody p{margin:0;font-size:14.5px;color:#3d4b4e;max-width:75ch}
+.applies{font-size:13.5px;color:#18272b}
+.dlact{display:flex;flex-wrap:wrap;gap:8px}
+.dlact a{font-size:14px;font-weight:700;text-decoration:none;border:1.5px solid #0f4c5c;color:#0f4c5c;border-radius:10px;padding:7px 12px;text-align:center}
+.dlact a.primary{background:#0f4c5c;color:#fff}
+.est2{font-size:12px;color:#5c6b6e;font-style:italic}
+@media(max-width:700px){.dlrow summary{grid-template-columns:1fr auto;gap:4px 8px}.dlday{grid-row:1;grid-column:1}.dlwhen{grid-row:1;grid-column:2}.dlrow summary .prov{grid-row:2;grid-column:1/-1;justify-self:start}.dlt{grid-row:3;grid-column:1/-1;white-space:normal}.dlbody{padding-left:6px}.dlact a{flex:1 1 140px}}
+details.rules{margin-top:12px;font-size:14px;color:#18272b}
+details.rules summary{cursor:pointer;font-weight:700}
+.kidbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.tag{border:2px solid var(--c);background:var(--card);color:var(--ink);border-radius:999px;padding:8px 14px;font:700 15px Nunito,sans-serif;min-height:44px;cursor:pointer;display:inline-flex;align-items:center;gap:6px}
+.tag i{width:10px;height:10px;border-radius:50%;background:var(--c)}
+.tag[aria-pressed=true]{background:var(--c);color:#fff}.tag[aria-pressed=true] i{background:#fff}
+.tag small{font-weight:600;opacity:.75}
+button,.btn{font:700 15px Nunito,sans-serif;min-height:44px;border-radius:12px;border:0;padding:0 16px;cursor:pointer;background:var(--lake);color:#fff;text-decoration:none;display:inline-flex;align-items:center;justify-content:center}
+.ghost{background:transparent;color:var(--ink);border:2px dashed var(--line)}
+.small{min-height:34px;padding:0 10px;font-size:13px}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,a:focus-visible{outline:3px solid var(--coral);outline-offset:2px}
+input,select,textarea{font:16px Nunito,sans-serif;min-height:44px;border-radius:10px;border:1.5px solid var(--line);background:var(--card);color:var(--ink);padding:8px 10px;width:100%}
+label{font-size:13px;font-weight:700;display:grid;gap:3px}
+.tabs{display:flex;gap:6px;overflow-x:auto;border-bottom:2px solid var(--line);margin-top:20px}
+.tabs button{background:none;color:var(--muted);border-radius:12px 12px 0 0;flex:none}
+.tabs button[aria-selected=true]{background:var(--lake2);color:var(--ink)}
+.note{font-size:14px;color:var(--muted)}
+.banner{background:#fff3c4;color:#3a3212;border-radius:12px;padding:10px 14px;font-size:14px;margin:12px 0}
+.filters{display:flex;flex-wrap:nowrap;gap:8px;margin:16px 0 8px;align-items:end;overflow-x:auto;padding-bottom:4px}.filters>label{flex:1 0 120px;min-width:0}.filters>label.wide{flex:2 0 190px}
+.chips{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:8px}
+.chip{background:var(--card);color:var(--ink);border:1.5px solid var(--line);border-radius:999px;min-height:38px;font-size:14px}
+.about{position:relative;font-size:13.5px}
+.about summary{cursor:pointer;color:var(--muted);text-decoration:underline dotted;list-style:none}
+.about summary::-webkit-details-marker{display:none}
+.about summary::before{content:'i';display:inline-grid;place-items:center;width:16px;height:16px;border-radius:50%;border:1.5px solid currentColor;font:700 11px Nunito,sans-serif;margin-right:5px;text-decoration:none}
+.about div{position:absolute;z-index:5;left:0;top:26px;width:min(340px,80vw);background:var(--card);color:var(--ink);border:1.5px solid var(--line);border-radius:12px;padding:10px 12px;box-shadow:0 6px 18px rgba(0,0,0,.12)}
+.chip[aria-pressed=true]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.week{padding:16px 0;border-bottom:1px solid var(--line)}
+.week h3{font-size:21px}
+.wkhead{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px}
+.arrows{display:flex;gap:6px}.arrows button{min-width:40px;font-size:20px;line-height:1}
+.rail{display:grid;grid-auto-flow:column;grid-template-rows:repeat(var(--rows),auto);grid-auto-columns:minmax(280px,320px);gap:10px;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:10px;overscroll-behavior-x:contain}
+.cmpbox{display:inline-flex;align-items:center;gap:4px;font-size:13px;font-weight:700;cursor:pointer}.cmpbox input{width:18px;height:18px;min-height:0}
+.cmpbar{position:sticky;top:0;z-index:6;display:flex;flex-wrap:wrap;gap:10px;align-items:center;background:var(--ink);color:var(--bg);border-radius:12px;padding:8px 12px;margin:10px 0}
+.cmpbar .ghost{color:var(--bg);border-color:rgba(255,255,255,.4)}
+.cmptable th{background:var(--lake2);min-width:150px}.cmptable td{min-width:180px}
+.rail>.card{scroll-snap-align:start}
+.lock{position:fixed;inset:0;z-index:50;display:grid;place-items:center;padding:16px;background:linear-gradient(115deg,#ffd9de,#ffe6cc,#fff5bf,#d6f5dc,#d4ecff,#e9e0ff)}.lock[hidden]{display:none}.lockcard{background:#fff;border-radius:22px;padding:26px;max-width:420px;width:100%;box-shadow:0 10px 40px rgba(31,35,51,.15);display:grid;gap:12px;border-top:8px solid transparent;border-image:var(--rb) 1}.lockh{font-size:30px;background:linear-gradient(90deg,#e8173f,#f06a00,#d99a00,#1f9d4c,#1b7fe0,#7a3ff2);-webkit-background-clip:text;background-clip:text;color:transparent}.lockcard p{margin:0}.lockcard input{font-size:18px}
+body{background:radial-gradient(900px 500px at 0% 30%,rgba(255,200,61,.10),transparent 60%),radial-gradient(900px 600px at 100% 60%,rgba(139,92,246,.09),transparent 60%),radial-gradient(800px 500px at 30% 100%,rgba(62,196,109,.09),transparent 60%),var(--bg)}
+.tabs{border-bottom:0;position:relative}.tabs::after{content:'';position:absolute;left:0;right:0;bottom:0;height:4px;border-radius:4px;background:var(--rb);opacity:.85}
+.tabs button[aria-selected=true]{color:#fff}
+.tabs button:nth-child(1)[aria-selected=true]{background:#e8173f}.tabs button:nth-child(2)[aria-selected=true]{background:#ef6c00}.tabs button:nth-child(3)[aria-selected=true]{background:#1f9d4c}.tabs button:nth-child(4)[aria-selected=true]{background:#1b7fe0}
+.week:nth-of-type(6n+1) h3{color:#d6163b}.week:nth-of-type(6n+2) h3{color:#d35a00}.week:nth-of-type(6n+3) h3{color:#a87400}.week:nth-of-type(6n+4) h3{color:#1a8a42}.week:nth-of-type(6n+5) h3{color:#176fc4}.week:nth-of-type(6n+6) h3{color:#6a35d9}
+.week h3 small{color:var(--muted)}
+.reqbtn{background:var(--rb);color:#1f2333;box-shadow:0 3px 0 rgba(31,35,51,.18)}
+.who-h{background:linear-gradient(90deg,#e8173f,#f06a00,#1f9d4c,#1b7fe0,#7a3ff2);-webkit-background-clip:text;background-clip:text;color:transparent}
+.cmpbar{background:linear-gradient(90deg,#7a3ff2,#1b7fe0)}
+.b.fit{background:#dff3e4;color:#1d5b33}.daysel{border:0;padding:0;margin:0;grid-column:1/-1}.daysel legend{font-weight:700;font-size:14px;margin-bottom:4px}.dchk{display:inline-flex;align-items:center;gap:4px;margin-right:12px;font-weight:600}.dchk input{width:18px;height:18px;min-height:0}
+*{scrollbar-color:rgba(29,43,47,.28) transparent}::-webkit-scrollbar-track,::-webkit-scrollbar-corner{background:transparent}::-webkit-scrollbar{height:8px;width:8px;background:transparent}::-webkit-scrollbar-thumb{background:rgba(29,43,47,.28);border-radius:8px}
+.toprow{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap}.reqbtn{background:var(--sun,#f5c542);color:#1d2b2f;border:0;border-radius:999px;padding:10px 18px;font-weight:800;white-space:nowrap}
+.reqdlg{max-width:560px;width:calc(100% - 28px);border:0;border-radius:18px;padding:20px;color:var(--ink)}.reqdlg::backdrop{background:rgba(0,0,0,.45)}.reqdlg label{display:block;margin-top:8px}.reqdlg textarea{width:100%;box-sizing:border-box}
+.card.pv{border-top:5px solid var(--pc)}.card.conf{border:2px solid var(--pc);border-top-width:5px}.card.pred{border:2px dashed #9aa5a7;border-top:5px solid var(--pc)}.card.pred.together,.card.conf.together{border-color:var(--coral);border-top-color:var(--pc)}
+.key{display:inline-flex;gap:10px;align-items:center;font-size:13px;color:var(--muted,#5c6b6e)}.key i{display:inline-block;width:22px;height:14px;border-radius:4px;vertical-align:middle;margin-right:4px}.key .ks{border:2px solid #0f4c5c}.key .kd{border:2px dashed #9aa5a7}.cprov .prov{font-size:12px;padding:1px 9px}.cprov{margin-bottom:6px}
+.crewc{border-left:4px solid var(--pc);padding-left:8px;margin:4px 0}
+.pvh{display:flex;flex-wrap:wrap;align-items:center;gap:8px}.pvh .prov{font-size:16px;padding:3px 12px}.rail .card>.note,.rail .card h4{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}.rail .card .meta span:not(.nw){display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}.rail .card .actions{margin-top:auto}
+@media(max-width:600px){.rail{grid-auto-columns:85%}}
+.week h3 small{font:600 14px Nunito,sans-serif;color:var(--muted)}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px}
+.card{background:var(--card);border:1.5px solid var(--line);border-radius:16px;padding:12px 14px;display:grid;gap:6px;align-content:start}
+.card.together{border-color:var(--coral);box-shadow:0 3px 0 var(--coral)}
+.card.mine{border-color:var(--lake)}
+.card h4{font-size:16px}
+.meta{font-size:13.5px;color:var(--muted);display:flex;flex-wrap:wrap;gap:2px 12px}
+.nw{white-space:nowrap}
+.badges{display:flex;flex-wrap:wrap;gap:6px}
+.b{border-radius:999px;padding:1px 9px;font-size:12.5px;font-weight:700;background:var(--lake2)}
+.b.new{background:var(--sun);color:#3a3212}.b.conf{background:#1f7a4d;color:#fff}.b.tog{background:var(--coral);color:#fff}.b.far{background:#f6d5cc;color:#5a2a1c}
+.who{display:flex;flex-wrap:wrap;gap:5px}
+.pill{border-radius:999px;padding:2px 9px;font-size:12.5px;font-weight:700;color:#fff;background:var(--c)}
+.pill.i{background:transparent;color:var(--ink);border:2px solid var(--c)}
+.pill.w,.pill.k{background:transparent;color:var(--ink);border:2px dashed var(--c)}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.row select{width:auto;flex:1}
+.actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.actions a{font-size:14px;font-weight:700}.actions .note{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:130px}
+table{border-collapse:collapse;width:100%;font-size:14.5px}
+th,td{text-align:left;padding:7px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+td.n,th.n{text-align:right;white-space:nowrap}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px}
+.panel{background:var(--card);border:1.5px solid var(--line);border-radius:16px;padding:16px;margin:14px 0}
+.msg{border-bottom:1px solid var(--line);padding:10px 0}
+.scroll{overflow-x:auto}
+.guide{background:#fff;color:#18272b;border-radius:16px;border:1.5px solid var(--line);padding:clamp(16px,3vw,32px);margin:14px 0}
+.guide h2{font-size:28px}.guide h3{font-size:20px;margin:22px 0 8px}
+.guide ol{padding-left:22px}.guide li{margin:4px 0}
+.guide .cal a{font-size:13px}
+.crew td.hit{font-weight:700}
+[hidden]{display:none!important}
+@media(max-width:700px){.filters>label{flex:0 0 150px}.filters>label.wide{flex:0 0 210px}.filters .wide{grid-column:1/-1}table{font-size:13px}}
+@media print{header,.kidbar,.tabs,#status,.noprint,section:not(#v-guide),#kidForm,h2.who-h{display:none!important}body{background:#fff}.band{padding:0}.guide{border:0;padding:0}a{text-decoration:none}}
+</style></head><body>
+<div id="lock" class="lock" hidden><form id="lockForm" class="lockcard"><h1 class="lockh">Camp Crew · Summer 2027</h1><p>This board is private to our group. Enter the crew code you were sent.</p><label>Crew code<input id="lockCode" autocomplete="off" autocapitalize="none" spellcheck="false" maxlength="60" required></label><button type="submit" id="lockGo">Open the board</button><p id="lockMsg" class="note" role="status"></p></form></div>
+<header class="band"><div class="wrap">
+  <div class="toprow"><h1>Camp Crew · Summer 2027</h1><button type="button" id="reqOpen" class="reqbtn">+ Suggest a camp</button></div>
+  <dialog id="reqDlg" class="reqdlg"><form id="reqForm" method="dialog">
+    <h3 style="font-size:20px;margin:0 0 6px">Suggest a camp to add</h3>
+    <p class="note" style="margin:0 0 10px">Tell us what you found: a camp name, website link, week, price, anything you know. It gets looked up automatically, and every session that fits (9am–2pm or longer, under 20 min, takes 7-year-olds) is added within a day.</p>
+    <label>Your name<input id="reqName" maxlength="40" placeholder="e.g. Jess"></label>
+    <label>What did you find?<textarea id="reqText" rows="5" maxlength="440" placeholder="e.g. Lego robotics camp at Glenelg Country School, July, saw it on their site: https://..." required></textarea></label>
+    <div class="row" style="justify-content:space-between;margin-top:10px"><button type="button" class="ghost small" id="reqManual">Or add the details myself</button><span class="row" style="gap:8px"><button type="button" class="ghost" id="reqCancel">Cancel</button><button type="submit" id="reqSend">Send request</button></span></div>
+    <div id="reqList"></div>
+  </form></dialog>
+  <p>Every camp near Clarksville that takes 7-year-olds for at least 9am–2pm. Search it, mark your kids' picks, see who'll be together, then print a booking guide for registration night.</p>
+  <details class="dlwrap" id="dlbox" open>
+    <summary class="dlhead"><span class="dltitle"><span class="chev" aria-hidden="true"></span><h2>Key dates &amp; deadlines</h2></span><span class="dlnext" id="dlnext"></span><span class="legend" id="legend"></span></summary>
+    <div id="deadlines"></div>
+    <details class="rules"><summary>Refund, payment and form rules</summary><ul id="rules"></ul></details>
+  </details>
+</div></header>
+
+<main class="band"><div class="wrap">
+<script>window.addEventListener('error',function(e){var b=document.getElementById('status');if(b){b.hidden=false;b.textContent='Something broke on this page: '+(e.message||'unknown error')+'. Please send Sarah a screenshot.'}});</script>
+  <div id="status" class="banner" hidden></div>
+  <div id="linkbox" class="panel" hidden></div>
+  <div id="cmpbar" class="cmpbar" hidden><span id="cmpcount"></span><button type="button" id="cmpopen">Compare side by side</button><button type="button" class="ghost small" id="cmpclear">Clear</button></div>
+  <div id="cmppanel" class="panel" hidden></div>
+  <h2 class="who-h" style="font-size:22px;margin-bottom:8px">Who are you planning for?</h2>
+  <div class="kidbar" id="kids"></div>
+  <div id="mine" class="row" style="gap:8px;margin:8px 0 4px;flex-wrap:wrap;align-items:center"></div>
+  <form id="kidForm" class="panel grid" hidden>
+    <label>Kid's first name<input id="kName" maxlength="40" required></label>
+    <label>Family (e.g. "the Parks")<input id="kFam" maxlength="40"></label>
+    <label>Age this summer<select id="kAge"></select></label>
+    <label>Care needed from<select id="kFrom"></select></label>
+    <label>Until<select id="kTo"></select></label>
+    <fieldset class="daysel"><legend>Days needed</legend><span id="kDays"></span></fieldset>
+    <div class="row" style="align-self:end"><button type="submit" id="kSubmit">Add kid</button><button type="button" class="ghost" id="kCancel">Cancel</button></div>
+  </form>
+
+  <div class="tabs" role="tablist">
+    <button role="tab" id="t-find" aria-selected="true">Find camps</button>
+    <button role="tab" id="t-crew" aria-selected="false">Our crew</button>
+    <button role="tab" id="t-guide" aria-selected="false">Booking guide</button>
+    <button role="tab" id="t-notes" aria-selected="false">Group notes</button>
+  </div>
+
+  <section id="v-find">
+    <div class="filters">
+      <label class="wide">Search<input id="q" type="search" placeholder="Camp name, subject, place, activity #…"></label>
+      <label>Week<select id="fWeek"><option value="">All weeks</option></select></label>
+      <label>Subject<select id="fCat"><option value="">All subjects</option></select></label>
+      <label>Provider<select id="fProv"><option value="">All providers</option></select></label>
+      <label>Show<select id="fShow"><option value="">All camps</option><option value="new">New since last check</option><option value="mine">My kid's list</option><option value="picked">Has kids on it</option><option value="short">Standard day only</option><option value="fits">Fits my kid's needs</option></select></label>
+      <label>Drive (est.)<select id="fDrive"><option value="20">20 min or less</option><option value="15">15 min or less</option><option value="10">10 min or less</option><option value="999">Any distance</option></select></label>
+      <label>Sort<select id="fSort"><option value="week">By week</option><option value="cost">Price, low to high</option><option value="drive">Closest first</option><option value="name">Name A–Z</option><option value="new">Newest added</option><option value="fit">Best fit for my kid</option></select></label>
+    </div>
+    <div class="chips info">
+      <span class="note" id="count"></span>
+      <span class="key"><span><i class="ks"></i>Confirmed 2027</span><span><i class="kd"></i>Predicted from 2026</span></span>
+      <details class="about"><summary>About these dates</summary><div>Most dates and prices come from the summer 2026 guides and are shown on the matching 2027 week. Sessions marked <b>2027 dates confirmed</b> are already published and have a solid outline. Dashed outlines are predictions based on 2026. When the 2027 guides come out in January, new sessions get a yellow <b>New</b> badge. Drive times are rough estimates from Clarksville.</div></details>
+    </div>
+    <div id="results"></div>
+    <div class="row" style="margin:16px 0"><button id="more" class="ghost" hidden>Show more</button></div>
+    <form id="campForm" class="panel" hidden>
+      <h3 id="cfTitle" style="font-size:20px;margin-bottom:10px">Add a camp session</h3>
+      <div class="grid">
+        <label>Camp name<input id="f-name" required maxlength="80"></label>
+        <label>Provider<input id="f-provider" maxlength="60"></label>
+        <label>Type<input id="f-category" maxlength="40" placeholder="Sports, Science & Tech…"></label>
+        <label>Theme tag<input id="f-theme" maxlength="40" placeholder="Optional"></label>
+        <label>Week starting (Monday)<input id="f-week" type="date"></label>
+        <label>Days<input id="f-days" maxlength="20" placeholder="M-F"></label>
+        <label>Hours<input id="f-hours" maxlength="40" placeholder="9am–3pm"></label>
+        <label>Cost per week ($)<input id="f-cost" type="number" min="0" step="1"></label>
+        <label>Ages<input id="f-ages" maxlength="20"></label>
+        <label>Location<input id="f-location" maxlength="80"></label>
+        <label>Drive from Clarksville (min)<input id="f-drive" type="number" min="0" step="1"></label>
+        <label>Registration link (https://…)<input id="f-link" type="url" maxlength="300"></label>
+      </div>
+      <label style="margin-top:10px">Notes<textarea id="f-notes" rows="2" maxlength="300"></textarea></label>
+      <div class="row" style="margin-top:12px"><button type="submit">Save</button><button type="button" class="ghost" id="cfCancel">Cancel</button><button type="button" class="ghost" id="cfDelete" hidden>Delete</button></div>
+    </form>
+  </section>
+
+  <section id="v-crew" hidden>
+    <p class="note" style="margin-top:14px">Every week where at least one kid has a pick. Bold names share a camp with someone else that week.</p>
+    <div class="scroll"><table class="crew" id="crew"></table></div>
+  </section>
+
+  <section id="v-guide" hidden>
+    <div class="row noprint" style="margin-top:14px"><label style="flex:1">Booking guide for<select id="gKid"></select></label><button id="print" style="align-self:end">Print or save as PDF</button></div>
+    <div id="guide"></div>
+  </section>
+
+  <section id="v-notes" hidden>
+    <form id="noteForm" class="panel">
+      <label>Your name<input id="noteName" maxlength="40" placeholder="So people know who posted"></label>
+      <label style="margin-top:10px">Post a note to the group<textarea id="noteText" rows="2" maxlength="500" placeholder="Need booking help for Pokémon week? Carpool to North Laurel Aug 3?"></textarea></label>
+      <div class="row" style="margin-top:10px"><button type="submit">Post</button></div>
+    </form>
+    <div id="notes"></div>
+  </section>
+</div></main>
+
+<script>
+{
+const $=s=>document.querySelector(s);
+const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const safeUrl=u=>typeof u==='string'&&u.startsWith('https://')?u:'';
+const COLORS=['#ff6b4a','#2f80d1','#7a4fd6','#d9488b','#1f9e89','#e08a00','#5a6fd8','#c2410c'];
+const STATUS={favorite:'★ Favorite',interested:'Want to book',backup:'Backup',waitlist:'Waitlist',registered:'Registered'};
+let kids=[],camps=[],picks=[],notes=[],deadlines=[],rules=[],cur=null,editing=null,busy=0,limit=120;
+let cmp=[];try{cmp=JSON.parse(localStorage.getItem('cc-cmp')||'[]')}catch(e){}
+const saveCmp=()=>{try{localStorage.setItem('cc-cmp',JSON.stringify(cmp))}catch(e){}};
+const flt={q:'',week:'',cat:'',prov:'',drive:20,sort:'week',chips:new Set()};
+const ls={get:k=>{try{return localStorage.getItem(k)}catch(e){return null}},set:(k,v)=>{try{v?localStorage.setItem(k,v):localStorage.removeItem(k)}catch(e){}}};
+cur=ls.get('cc-kid');
+let CODE=ls.get('cc-crew')||'';
+const API='https://script.google.com/macros/s/AKfycbwyvhpXCTl23VpOf49vAY7Ue0lP6aiVTGGZYqQrPRHQUTWROTO4cjOlD-ReSQiJvSLX/exec';
+const ONGAS=!!(window.google&&google.script&&google.script.run);
+const call=(fn,...a)=>ONGAS?new Promise((res,rej)=>google.script.run.withSuccessHandler(res).withFailureHandler(rej)[fn](CODE,...a)):fetch(API,{method:'POST',credentials:'omit',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({fn,args:[CODE,...a]})}).then(r=>r.json()).then(j=>{if(!j.ok)throw new Error(j.error||'error');return j.data});
+const isLocked=e=>/LOCKED/.test(String(e&&e.message||e));
+function showLock(msg){const L=$('#lock');L.hidden=false;$('#lockMsg').textContent=msg||'';status('');setTimeout(()=>$('#lockCode').focus(),50)}
+const status=t=>{const b=$('#status');b.hidden=!t;b.textContent=t||''};
+const kidColor=id=>{const i=kids.findIndex(k=>k.id===id);return COLORS[(i<0?0:i)%COLORS.length]};
+const D=s=>{const x=new Date(String(s).slice(0,10)+'T12:00:00');return isNaN(x)?null:x};
+const fmtDay=(s,o={month:'short',day:'numeric'})=>{const x=D(s);return x?x.toLocaleDateString('en-US',o):''};
+const money=n=>typeof n==='number'&&!isNaN(n)?'$'+n.toLocaleString('en-US'):'—';
+const kidsOn=cid=>picks.filter(p=>String(p.camp)===cid&&STATUS[p.status]&&kids.some(k=>k.id===p.kid));
+const pickFor=(kid,cid)=>picks.find(p=>p.kid===kid&&String(p.camp)===cid);
+const isNew=c=>{if(!c.addedAt)return false;const x=D(c.addedAt);return x&&(Date.now()-x)<1000*60*60*24*30};
+const ext=c=>/7(:\d\d)?am|7:45am|8am/.test(c.hours)&&/[56](:\d\d)?pm/.test(c.hours);
+
+const pad=n=>String(n).padStart(2,'0');
+const ymd=d=>d.getFullYear()+pad(d.getMonth()+1)+pad(d.getDate());
+const wkKey=w=>{const x=D(w);if(!x)return'';if(x.getFullYear()<2027)x.setTime(x.getTime()+364*864e5);return x.getFullYear()+'-'+pad(x.getMonth()+1)+'-'+pad(x.getDate())};
+function parseHours(h){const m=String(h).match(/(\d{1,2})(?::(\d\d))?\s*(am|pm)\s*[–-]\s*(\d{1,2})(?::(\d\d))?\s*(am|pm)/i);if(!m)return null;
+  const t=(H,M,ap)=>{H=+H%12+(ap.toLowerCase()==='pm'?12:0);return pad(H)+pad(M||'00')+'00'};return [t(m[1],m[2],m[3]),t(m[4],m[5],m[6])]}
+function campEvent(c){
+  let d=D(c.week);if(!d)return null;let tent=false;
+  if(d.getFullYear()<2027){d=new Date(d.getTime()+364*864e5);tent=true}
+  const days=/M-Th/.test(c.days)?4:/Tu-F|M,W-F|M-W,F/.test(c.days)?4:/Tu,W/.test(c.days)?2:/Tu-Th/.test(c.days)?3:5;
+  if(/^Tu/.test(c.days))d=new Date(d.getTime()+864e5);
+  const hrs=parseHours(c.hours);
+  return {title:(tent?'(Tentative) ':'')+c.name,start:d,days,hrs,loc:c.location,details:`${c.hours}, ${c.days}. ${c.provider}. Activity ${c.id}. ${tent?'Based on the 2026 schedule; confirm 2027 dates. ':''}${safeUrl(c.link)}`};
+}
+function gcalLink(e){
+  let dates;
+  if(e.hrs){const s=ymd(e.start);dates=`${s}T${e.hrs[0]}/${s}T${e.hrs[1]}`}
+  else if(e.time){const s=ymd(e.start);dates=`${s}T${e.time}/${s}T${e.timeEnd}`}
+  else{const end=new Date(e.start.getTime()+(e.span||1)*864e5);dates=`${ymd(e.start)}/${ymd(end)}`}
+  let u='https://calendar.google.com/calendar/render?action=TEMPLATE&ctz=America/New_York&text='+encodeURIComponent(e.title)+'&dates='+dates+'&details='+encodeURIComponent(e.details||'')+(e.loc?'&location='+encodeURIComponent(e.loc):'');
+  if(e.days>1&&e.hrs)u+='&recur='+encodeURIComponent('RRULE:FREQ=DAILY;COUNT='+e.days);
+  return u;
+}
+function icsText(e){
+  const s=ymd(e.start),stamp=ymd(new Date())+'T000000Z',lines=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-'+String.fromCharCode(47,47)+'Camp Crew'+String.fromCharCode(47,47)+'EN','BEGIN:VEVENT','UID:'+s+Math.random().toString(36).slice(2)+'@campcrew','DTSTAMP:'+stamp];
+  if(e.hrs){lines.push('DTSTART;TZID=America/New_York:'+s+'T'+e.hrs[0],'DTEND;TZID=America/New_York:'+s+'T'+e.hrs[1]);if(e.days>1)lines.push('RRULE:FREQ=DAILY;COUNT='+e.days)}
+  else if(e.time){lines.push('DTSTART;TZID=America/New_York:'+s+'T'+e.time,'DTEND;TZID=America/New_York:'+s+'T'+e.timeEnd)}
+  else lines.push('DTSTART;VALUE=DATE:'+s,'DTEND;VALUE=DATE:'+ymd(new Date(e.start.getTime()+864e5)));
+  const clean=t=>String(t).replace(/([,;\\])/g,'\\$1').replace(/\n/g,'\\n');
+  lines.push('SUMMARY:'+clean(e.title),'DESCRIPTION:'+clean(e.details||''),e.loc?'LOCATION:'+clean(e.loc):'','END:VEVENT','END:VCALENDAR');
+  return lines.filter(Boolean).join('\r\n');
+}
+const ICS=[];
+const calLinks=e=>{if(!e)return'';ICS.push(e);return `<span class="cal">Add to: <a target="_blank" rel="noopener" href="${esc(gcalLink(e))}">Google Calendar</a> · <a href="#" data-ics="${ICS.length-1}">Apple/Outlook</a></span>`};
+const dlEvent=d=>{const t=String(d.d);const e={title:d.t,start:D(t),details:d.x+(d.est?' (Date estimated from 2026.)':'')+' '+(safeUrl(d.l)||'')};
+  if(t.includes('T')){const hm=t.slice(11,16).replace(':','');e.time=hm+'00';e.timeEnd=pad(+hm.slice(0,2)+1)+hm.slice(2)+'00'}return e};
+
+const PROV={school:{n:'School calendar (HCPSS)',c:'#c2410c'},rp:{n:'Howard County Rec & Parks',c:'#0f4c5c'},ca:{n:'Columbia Association',c:'#7a4fd6'},sk:{n:'Club SciKidz Maryland (direct)',c:'#d9488b'},all:{n:'All camps',c:'#5c6b6e'},other:{n:'Other provider',c:'#5c6b6e'}};
+const pvKey=n=>n==='Howard County Rec & Parks'?'rp':n==='Columbia Association'?'ca':/^Club SciKidz/.test(n)?'sk':'other';
+const provChip=(k,label)=>`<span class="prov" style="--pc:${PROV[k].c}">${esc(label||PROV[k].n)}</span>`;
+const provOf=d=>d.p?d.p:/ActiveNet|Rec & Parks/.test(d.t)&&!/Columbia/.test(d.t)?'rp':/Columbia Association/.test(d.t)?'ca':/Club SciKidz/.test(d.t)?'sk':'all';
+const campProv=c=>/^RP/.test(c.id)?'rp':c.provider==='Columbia Association'?'ca':/^Club SciKidz/.test(c.provider)?'sk':'other';
+function appliesTo(p){
+  if(p==='school')return 'Howard County Public Schools families: sets when summer camp weeks start and end';
+  const list=p==='all'?camps:camps.filter(c=>campProv(c)===p);
+  const vendors=[...new Set(list.map(c=>c.provider))].filter(Boolean);
+  const picked=picks.filter(x=>STATUS[x.status]&&list.some(c=>c.id===String(x.camp))).length;
+  let t=p==='all'?`Every camp on this board (${list.length} sessions)`:`${list.length} session${list.length===1?'':'s'}`;
+  if(p==='rp')t+=', including Summer Blast, Club SciKidz, Mad Science, Play-Well LEGO, KidzArt, Robinson Nature Center, chess, sports and more';
+  if(p==='ca')t+=`: ${[...new Set(list.map(c=>c.name))].join(', ')}`;
+  if(p==='sk')t+=` (grades 1–3) at ${[...new Set(list.map(c=>c.location.split(',')[0]))].join(', ')}`;
+  return t+(picked?` · <strong>your group has ${picked} pick${picked===1?'':'s'} here</strong>`:'');
+}
+const EXTRA=[
+ {d:'2026-11-28',p:'sk',t:'Club SciKidz registration opens: Small Business Saturday',x:'Early-bird pricing for summer 2027. Howard County sessions are posted for grades 1–3, about $409 a week before discounts. No opening time is posted, so check first thing Saturday morning.',l:'https://www.clubscikidzmd.com/summer-camps/',est:false},
+ {d:'2027-03-31',p:'sk',t:'Club SciKidz full-refund deadline',x:'Through Mar 31: full refund minus a $30 fee, or full account credit. Apr 1 to May 27: 75% refund or full credit. After May 27: account credit only, and nothing within 14 days of camp.',l:'https://www.clubscikidzmd.com/summer-camps/jurassic/',est:false}
+];
+const SCHOOL=[
+ {d:'2027-06-08',p:'school',t:'Last scheduled day of school',x:'3-hour early dismissal. If snow days get used, school can run into June 9–11 and 14–16, so hold off on camps that week until HCPSS confirms the last day.',l:'https://www.hcpss.org/calendar/2026-27-dates-only/',est:false},
+ {d:'2027-06-18',p:'school',t:'Juneteenth: schools and county offices closed',x:'County-run camps may skip this Friday or run a 4-day week. Check each camp listing.',l:'https://www.hcpss.org/calendar/2026-27-dates-only/',est:false},
+ {d:'2027-07-05',p:'school',t:'Independence Day (observed): county offices closed',x:'Expect a 4-day camp week (Tue–Fri) for county-run camps.',l:'https://www.hcpss.org/calendar/2026-27-dates-only/',est:false},
+ {d:'2027-08-23',p:'school',t:'First day of school, 2027–28',x:'Camp weeks after Aug 16 run into the school year. Date is from the 2027–28 calendar the school board approved in September 2026; confirm on the HCPSS site.',l:'https://www.hcpss.org/calendar/',est:false}
+];
+function renderDeadlines(){
+  const today=new Date();today.setHours(0,0,0,0);
+  const up=deadlines.filter(d=>D(d.d)>=today).sort((a,b)=>String(a.d).localeCompare(String(b.d)));
+  const used=[...new Set(up.map(provOf))];
+  $('#dlnext').textContent=up.length?`Next: ${fmtDay(up[0].d)} · ${up[0].t} (tap to open)`:'';
+  $('#legend').innerHTML=used.map(p=>`<span class="prov" style="--pc:${PROV[p].c}">${esc(PROV[p].n)}</span>`).join('');
+  $('#deadlines').innerHTML=up.map((d,i)=>{const p=provOf(d),days=Math.round((D(d.d)-today)/864e5),ev=dlEvent(d);ICS.push(ev);
+    const when=days===0?'today':days===1?'tomorrow':`in ${days} days`;
+    return `<details class="dlrow${i===0?' next':''}">
+      <summary><span class="dlday">${esc(fmtDay(d.d,{weekday:'short',month:'short',day:'numeric'}))}${String(d.d).includes('T')?' · 6pm':''}</span><span class="prov" style="--pc:${PROV[p].c}">${esc(PROV[p].n)}</span><span class="dlt">${esc(d.t)}</span><span class="dlwhen${days<=14?' soon':''}">${i===0?'Next · ':''}${when}</span></summary>
+      <div class="dlbody"><p>${esc(d.x)}</p><div class="applies">Applies to: ${appliesTo(p)}</div>${d.est?'<div class="est2">Date estimated from 2026.</div>':''}
+      <div class="dlact">${safeUrl(d.l)?`<a class="primary" target="_blank" rel="noopener" href="${esc(d.l)}">Open site ↗</a>`:''}<a target="_blank" rel="noopener" href="${esc(gcalLink(ev))}">+ Google Calendar</a><a href="#" data-ics="${ICS.length-1}">+ Apple / Outlook</a></div></div>
+    </details>`}).join('');
+  $('#rules').innerHTML=rules.map(r=>`<li>${esc(r)}</li>`).join('');
+}
+function renderKids(){
+  $('#kids').innerHTML=kids.map(k=>`<button class="tag" style="--c:${kidColor(k.id)}" aria-pressed="${k.id===cur}" data-kid="${esc(k.id)}"><i></i>${esc(k.name)}${k.family?` <small>${esc(k.family)}</small>`:''}</button>`).join('')
+   +`<button class="tag ghost" style="--c:var(--line)" id="addKid">+ Add a kid</button>`+(kids.length?'':'<span class="note">Add your kid, then tap their name to mark camps.</span>');
+  const ck=kids.find(k=>k.id===cur);$('#mine').innerHTML=ck?`<span class="note"><b>${esc(ck.name)}</b>${kprof?` · age ${kprof.age} · needs ${fmtH(kprof.from)}–${fmtH(kprof.to)}, ${esc(kprof.days.join(' '))}`:''} · picks, compare list and filters <span id="savedNote">save automatically</span>.</span> <button type="button" class="ghost small" id="editNeeds">${kprof?'Edit':'Add'} age &amp; hours</button> <button type="button" class="ghost small" id="myLink">Copy ${esc(ck.name)}'s link</button>`:'';
+  const g=$('#gKid'),v=g.value||cur||'';g.innerHTML='<option value="">Choose a kid</option>'+kids.map(k=>`<option value="${esc(k.id)}">${esc(k.name)}</option>`).join('');g.value=kids.some(k=>k.id===v)?v:'';
+}
+function pills(cid){return kidsOn(cid).map(p=>{const k=kids.find(x=>x.id===p.kid);const cls={registered:'',waitlist:'w',backup:'k',interested:'i',favorite:'i'}[p.status];return `<span class="pill ${cls}" style="--c:${kidColor(k.id)}" title="${esc(STATUS[p.status])}">${esc(k.name)}${p.status==='registered'?' ✓':p.status==='waitlist'?' (wait)':p.status==='backup'?' (backup)':p.status==='favorite'?' ★':''}</span>`}).join('')}
+function card(c){
+  const on=kidsOn(c.id),tog=on.length>=2,ck=kids.find(k=>k.id===cur),p=ck&&pickFor(cur,c.id),url=safeUrl(c.link);
+  const pk=campProv(c);
+  return `<article class="card pv ${/^2027/.test(c.week)?'conf':'pred'}${tog?' together':''}${p?' mine':''}" style="--pc:${PROV[pk].c}">
+    <div class="cprov">${provChip(pk,pk==='other'?c.provider:'')}</div>
+    <div class="badges">${/^2027/.test(c.week)?'<span class="b conf">2027 dates confirmed</span>':''}${isNew(c)?'<span class="b new">New</span>':''}${tog?`<span class="b tog">${on.length} kids together</span>`:''}${c.drive>20?'<span class="b far">Over 20 min</span>':''}${(i=>i.length?`<span class="b far">${esc(i.join(' · '))}</span>`:(kprof&&ck?'<span class="b fit">Fits '+esc(ck.name)+'</span>':''))(fitIssues(c,kprof))}</div>
+    <h4>${esc(c.name)}</h4>
+    <div class="meta"><span class="nw">${esc(c.hours)} · ${esc(c.days)}</span><span class="nw">${money(c.cost)}</span><span class="nw">${/^Grade/.test(c.ages)?'':'Ages '}${esc(c.ages)}</span></div>
+    <div class="meta"><span>${esc(c.location)}${c.drive?` · ~${esc(c.drive)} min`:''}</span><span class="nw">${esc(subj(c))}${pk==='other'||pk==='rp'?' · '+esc(c.provider):''}</span></div>
+    ${c.notes?`<div class="note">${esc(c.notes)}</div>`:''}
+    <div class="who">${pills(c.id)}</div>
+    ${ck?`<select data-pick="${esc(c.id)}" aria-label="Status for ${esc(ck.name)}"><option value="">${esc(ck.name)}: not going</option>${Object.entries(STATUS).map(([v,l])=>`<option value="${v}" ${p&&p.status===v?'selected':''}>${esc(ck.name)}: ${l}</option>`).join('')}</select>`:''}
+    <div class="actions">${url?`<a target="_blank" rel="noopener" href="${esc(url)}">Register ↗</a>`:''}<span class="note">#${esc(c.id)}</span><button type="button" class="ghost small" data-hide="${esc(c.id)}">${hid.includes(c.id)?'Unhide':'Hide'}</button><label class="cmpbox"><input type="checkbox" data-cmp="${esc(c.id)}" ${cmp.includes(c.id)?'checked':''}> Compare</label></div>
+  </article>`;
+}
+function filtered(){
+  const fold=x=>String(x).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();const q=fold(flt.q).trim(),ch=flt.chips;
+  let list=camps.filter(c=>{
+    if(hid.includes(c.id)!==showHid)return false;
+    if(flt.week&&c.wk!==flt.week)return false;
+    if(flt.prov&&(flt.prov.startsWith('pv:')?campProv(c)!==flt.prov.slice(3):c.provider!==flt.prov))return false;if(flt.cat&&(flt.cat.startsWith('theme:')?c.theme!==flt.cat.slice(6):subj(c)!==flt.cat))return false;
+    if(c.drive!==''&&c.drive!=null&&+c.drive>flt.drive)return false;
+    for(const x of ch){if(x.startsWith('theme:')&&c.theme!==x.slice(6))return false;if(x==='new'&&!isNew(c))return false;if(x==='picked'&&!kidsOn(c.id).length)return false;if(x==='mine'&&!(cur&&pickFor(cur,c.id)&&STATUS[pickFor(cur,c.id).status]))return false;if(x==='short'&&ext(c))return false;if(x==='fits'&&fitIssues(c,kprof).length)return false}
+    if(q){const hay=[c.name,c.provider,c.category,c.theme,c.location,c.id,c.notes,c.ages,fmtDay(c.wk)].join(' ');const hf=fold(hay);if(!q.split(/\s+/).every(w=>hf.includes(w)))return false}
+    return true});
+  const by={week:(a,b)=>String(a.wk).localeCompare(String(b.wk))||String(a.name).localeCompare(b.name),cost:(a,b)=>(a.cost||9999)-(b.cost||9999),drive:(a,b)=>(a.drive||99)-(b.drive||99),name:(a,b)=>String(a.name).localeCompare(b.name),new:(a,b)=>String(b.addedAt).localeCompare(String(a.addedAt)),fit:(a,b)=>fitIssues(a,kprof).length-fitIssues(b,kprof).length||String(a.wk).localeCompare(String(b.wk))};
+  return list.sort(by[flt.sort]);
+}
+function renderFind(){queueSave();
+  const list=filtered(),shown=list.slice(0,limit);
+  $('#count').innerHTML=`${showHid?'Hidden: ':''}${list.length} session${list.length===1?'':'s'}`+(hid.length?` <button type="button" class="ghost small" id="togHid">${showHid?'Back to all camps':'Show '+hid.length+' hidden'}</button>`:'');
+  $('#more').hidden=list.length<=limit;
+  if(!list.length){$('#results').innerHTML='<p class="note">Nothing matches. Try clearing a filter or widening the drive time.</p>';return}
+  if(flt.sort==='week'){
+    const g={};for(const c of shown)(g[c.wk||'']??=[]).push(c);
+    $('#results').innerHTML=Object.keys(g).map(w=>{const n=g[w].length;return `<div class="week"><div class="wkhead"><h3>${w?'Week of '+esc(fmtDay(w,{month:'long',day:'numeric'})):'Any week'} <small>${n} camp${n===1?'':'s'}${n>4?' · scroll for more':''}</small></h3>${n>4?'<span class="arrows"><button type="button" class="ghost small" data-scroll="-1" aria-label="Scroll left">‹</button><button type="button" class="ghost small" data-scroll="1" aria-label="Scroll right">›</button></span>':''}</div><div class="rail" style="--rows:${n>2?2:1}">${g[w].map(card).join('')}</div></div>`}).join('');
+  } else $('#results').innerHTML=`<div class="cards" style="margin-top:12px">${shown.map(card).join('')}</div>`;
+}
+function renderCrew(){
+  const ks=kids.filter(k=>picks.some(p=>p.kid===k.id&&STATUS[p.status]));
+  const weeks=[...new Set(picks.map(p=>camps.find(c=>c.id===String(p.camp))).filter(Boolean).map(c=>c.wk))].sort();
+  if(!ks.length){$('#crew').innerHTML='<tr><td class="note">No picks yet. Choose a kid, then mark camps on the Find camps tab.</td></tr>';return}
+  $('#crew').innerHTML=`<thead><tr><th>Week</th>${ks.map(k=>`<th><span class="pill" style="--c:${kidColor(k.id)}">${esc(k.name)}</span></th>`).join('')}</tr></thead><tbody>`+weeks.map(w=>`<tr><td class="nw">${w?esc(fmtDay(w)):'Any'}</td>${ks.map(k=>{const ps=picks.filter(p=>p.kid===k.id&&STATUS[p.status]).map(p=>({p,c:camps.find(c=>c.id===String(p.camp))})).filter(x=>x.c&&x.c.wk===w);
+    return `<td>${ps.map(({p,c})=>`<div class="crewc ${kidsOn(c.id).length>1?'hit':''}" style="--pc:${PROV[campProv(c)].c}">${esc(c.name)}<div class="note">${esc(STATUS[p.status])} · ${esc(c.location)}</div></div>`).join('')||'<span class="note">—</span>'}</td>`}).join('')}</tr>`).join('')+'</tbody>';
+}
+function renderGuide(){
+  const kid=kids.find(k=>k.id===$('#gKid').value);
+  if(!kid){$('#guide').innerHTML='<p class="note" style="margin-top:12px">Choose a kid to build their booking guide.</p>';return}
+  const mine=picks.filter(p=>p.kid===kid.id&&STATUS[p.status]).map(p=>({p,c:camps.find(c=>c.id===String(p.camp))})).filter(x=>x.c).sort((a,b)=>String(a.c.wk).localeCompare(String(b.c.wk)));
+  if(!mine.length){$('#guide').innerHTML=`<p class="note" style="margin-top:12px">${esc(kid.name)} has no camps marked yet.</p>`;return}
+  const toBook=mine.filter(x=>x.p.status!=='registered');
+  const byProv={};for(const x of toBook){const k=/^RP/.test(x.c.id)?'Howard County Rec & Parks':x.c.provider;(byProv[k]??=[]).push(x)}
+  const total=mine.filter(x=>x.p.status==='interested'||x.p.status==='registered').reduce((s,x)=>s+(+x.c.cost||0),0);
+  const friends=x=>kidsOn(x.c.id).filter(p=>p.kid!==kid.id).map(p=>kids.find(k=>k.id===p.kid)?.name).filter(Boolean);
+  const today=new Date();today.setHours(0,0,0,0);
+  const provs=Object.keys(byProv);
+  const relDl=deadlines.filter(d=>D(d.d)>=today&&(/ActiveNet|Rec & Parks/.test(d.t)&&provs.some(p=>p.includes('Rec & Parks'))||/Columbia Association/.test(d.t)&&provs.includes('Columbia Association')||/Club SciKidz/.test(d.t)&&provs.some(p=>/^Club SciKidz/.test(p))||/guides/.test(d.t)));
+  const steps={'Howard County Rec & Parks':['Before registration night, sign in to ActiveNet, add '+kid.name+' to your household and save a payment method.','Log in by 5:45pm on registration night and keep this guide open.','At 6pm, search each activity number below in order. Add the "Want to book" sessions to your cart first, then backups.','Check out right away. A session in your cart is not held until you pay.','If a session is full, join its waitlist, then mark it "Waitlist" in Camp Crew.','Mark each booked camp "Registered" in Camp Crew so the group sees it.'],
+   'Columbia Association':['Register online when CA opens (early February). There is a $60 registration fee per child.','A credit card on file holds the spot; the week is charged about 17 days before it starts.','Mark it "Registered" in Camp Crew.'],
+   'Club SciKidz Maryland (direct)':['Registration opens on Small Business Saturday (Sat Nov 28) with early-bird pricing. Popular weeks sold out in 2025, so register that morning.','Register on the Club SciKidz Maryland site (the link next to each camp). Online registration closes at midnight the Wednesday before each camp week.','Full refund minus $30 through Mar 31; 75% refund Apr 1–May 27; account credit only after that.','Mark it "Registered" in Camp Crew.']};
+  $('#guide').innerHTML=`<div class="guide">
+    <h2>Booking guide: ${esc(kid.name)}${kid.family?' <span class="note">('+esc(kid.family)+')</span>':''}</h2>
+    <p class="note">Made ${esc(new Date().toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'}))}. Camp dates and prices are from the 2026 guides until they're updated for 2027. Estimated weekly total for booked and wanted camps: <strong>${money(total)}</strong>.</p>
+    <h3>Key dates</h3>
+    <table><tbody>${relDl.map(d=>`<tr><td class="nw"><strong>${esc(fmtDay(d.d,{weekday:'short',month:'short',day:'numeric'}))}</strong>${d.est?'<div class="note">estimated</div>':''}</td><td><strong>${esc(d.t)}</strong><div class="note">${esc(d.x)}</div>${calLinks(dlEvent(d))}</td></tr>`).join('')}</tbody></table>
+    ${provs.map(pv=>`<h3 class="pvh" style="--pc:${PROV[pvKey(pv)].c}">Register with ${provChip(pvKey(pv),pv)}</h3><ol>${(steps[pv]||['Register on the provider\'s site using the link below.','Mark it "Registered" in Camp Crew.']).map(s=>`<li>${esc(s)}</li>`).join('')}</ol>
+      <div class="scroll"><table><thead><tr><th>Priority</th><th>Activity #</th><th>Camp</th><th>Week</th><th class="n">Cost</th><th>Friends</th></tr></thead><tbody>
+      ${byProv[pv].map(x=>`<tr><td>${esc(STATUS[x.p.status])}</td><td class="nw"><strong>${esc(x.c.id)}</strong></td><td>${safeUrl(x.c.link)?`<a target="_blank" rel="noopener" href="${esc(x.c.link)}">${esc(x.c.name)}</a>`:esc(x.c.name)}<div class="note">${esc(x.c.location)} · ${esc(x.c.hours)}</div></td><td class="nw">${esc(fmtDay(x.c.wk))}</td><td class="n">${money(x.c.cost)}</td><td>${esc(friends(x).join(', '))}</td></tr>`).join('')}</tbody></table></div>`).join('')}
+    <h3>${esc(kid.name)}'s summer, week by week</h3>
+    <table><thead><tr><th>Week</th><th>Camp</th><th>Status</th><th>Calendar</th></tr></thead><tbody>
+    ${mine.map(x=>`<tr><td class="nw">${esc(fmtDay(x.c.wk))}</td><td>${esc(x.c.name)}<div class="note">${esc(x.c.hours)}, ${esc(x.c.days)} · ${esc(x.c.location)}${friends(x).length?' · with '+esc(friends(x).join(', ')):''}</div></td><td>${esc(STATUS[x.p.status])}</td><td>${calLinks(campEvent(x.c))}</td></tr>`).join('')}</tbody></table>
+    <h3>After you book</h3><ol><li>Watch for camp forms by email about 2 weeks before each session. Medication forms need a doctor's signature.</li><li>Pack a nut-free snack, lunch and a water bottle unless the camp says otherwise.</li>${rules.map(r=>`<li>${esc(r)}</li>`).join('')}</ol>
+  </div>`;
+}
+function renderNotes(){if($('#reqDlg').open)renderReqs();
+  $('#notes').innerHTML=notes.length?[...notes].sort((a,b)=>String(b.at).localeCompare(String(a.at))).map(n=>`<div class="msg"><b>${esc(n.author||'Someone')}</b> <span class="note">${n.at?esc(new Date(n.at).toLocaleDateString('en-US',{month:'short',day:'numeric'})):''}</span><div>${esc(n.text)}</div><button class="ghost small" data-delnote="${esc(n.id)}">Delete</button></div>`).join(''):'<p class="note">No notes yet. Post carpool offers, booking-help requests, or who is registering when.</p>';
+}
+const subj=c=>c.category==='Columbia Association'?(/Art/.test(c.name)?'Arts & Crafts':/Nature/.test(c.name)?'Nature':/Sport/.test(c.name)?'Sports':'General day camp'):c.category==='All-Around'?'General day camp':c.category==='Chess'?'Chess & Games':(c.category||'Other');
+function fillSelects(){
+  const wk=[...new Set(camps.map(c=>c.wk).filter(Boolean))].sort(),cats=[...new Set(camps.map(c=>c.category).filter(Boolean))].sort();
+  const w=$('#fWeek'),c=$('#fCat');
+  w.innerHTML='<option value="">All weeks</option>'+wk.map(x=>`<option value="${esc(x)}">Week of ${esc(fmtDay(x))}</option>`).join('');w.value=flt.week;
+  const pc={},vc={};camps.forEach(x=>{const k=campProv(x);if(k!=='other')pc[k]=(pc[k]||0)+1;if(x.provider)vc[x.provider]=(vc[x.provider]||0)+1});const pr=$('#fProv');
+  pr.innerHTML='<option value="">All providers</option><optgroup label="Book through">'+['rp','ca','sk'].filter(k=>pc[k]).map(k=>`<option value="pv:${k}">${esc(PROV[k].n)} (${pc[k]})</option>`).join('')+'</optgroup><optgroup label="Camp company">'+Object.keys(vc).sort((a,b)=>a.localeCompare(b)).map(x=>`<option value="${esc(x)}">${esc(x)} (${vc[x]})</option>`).join('')+'</optgroup>';pr.value=flt.prov;if(pr.value!==flt.prov){flt.prov='';pr.value=''}
+  const cnt={};camps.forEach(x=>{const k=subj(x);cnt[k]=(cnt[k]||0)+1});const th={};camps.forEach(x=>{if(x.theme)th[x.theme]=(th[x.theme]||0)+1});
+  c.innerHTML='<option value="">All subjects</option>'+Object.keys(cnt).sort().map(x=>`<option value="${esc(x)}">${esc(x)} (${cnt[x]})</option>`).join('');c.value=flt.cat;if(c.value!==flt.cat){flt.cat='';c.value=''}
+}
+function renderCompare(){queueSave();
+  cmp=cmp.filter(id=>camps.some(c=>c.id===id));
+  $('#cmpbar').hidden=!cmp.length;$('#cmpcount').textContent=`${cmp.length} of 4 picked to compare`;
+  const P=$('#cmppanel');if(P.hidden)return;
+  const cs=cmp.map(id=>camps.find(c=>c.id===id));
+  if(!cs.length){P.hidden=true;return}
+  const rows=[['Week',c=>esc(fmtDay(c.wk,{month:'short',day:'numeric'}))],['Hours',c=>esc(c.hours)+' · '+esc(c.days)],['Cost',c=>money(c.cost)],['Ages',c=>esc(c.ages)],['Where',c=>esc(c.location)+(c.drive?` · ~${esc(c.drive)} min`:'')],['Subject',c=>esc(subj(c))+(c.theme?' · '+esc(c.theme):'')],['Provider',c=>esc(c.provider)],["Who's going",c=>pills(c.id)||'<span class="note">No one yet</span>'],['Notes',c=>esc(c.notes)],['',c=>safeUrl(c.link)?`<a target="_blank" rel="noopener" href="${esc(c.link)}">Register ↗</a>`:'']];
+  P.innerHTML=`<div class="row" style="justify-content:space-between"><h3 style="font-size:20px">Compare</h3><button type="button" class="ghost small" id="cmpclose">Close</button></div><div class="scroll"><table class="cmptable"><thead><tr><th></th>${cs.map(c=>`<th style="border-top:5px solid ${PROV[campProv(c)].c}">${esc(c.name)}<div style="margin:4px 0">${provChip(campProv(c),campProv(c)==='other'?c.provider:'')}</div><div><button type="button" class="ghost small" data-uncmp="${esc(c.id)}">Remove</button></div></th>`).join('')}</tr></thead><tbody>${rows.map(([l,f])=>`<tr><th>${l}</th>${cs.map(c=>`<td>${f(c)}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
+}
+function render(){ICS.length=0;renderCompare();renderDeadlines();renderKids();renderFind();renderCrew();renderGuide();renderNotes()}
+const DAYS=['M','Tu','W','Th','F'];
+const parseDays=s=>{const out=new Set();String(s).replace(/\s/g,'').split(',').forEach(p=>{const [a,b]=p.split('-');const i=DAYS.indexOf(a),j=b?DAYS.indexOf(b):i;if(i>=0&&j>=0)for(let x=i;x<=j;x++)out.add(DAYS[x])});return out};
+const parseT=s=>{const m=String(s||'').match(/(\d{1,2})(?::(\d\d))?\s*(am|pm)/i);if(!m)return null;return (+m[1]%12)+(m[3].toLowerCase()==='pm'?12:0)+(m[2]?+m[2]/60:0)};
+const hrsOf=c=>{const p=String(c.hours).split(/[–-]/);return [parseT(p[0]),parseT(p[1])]};
+const ageOf=c=>{const s=String(c.ages);const g=s.match(/Grades?\s*(K|\d+)\s*[–-]\s*(\d+)/i);if(g){const a=g[1]==='K'?0:+g[1];return [a+5,+g[2]+6]}const m=s.match(/(\d+)\s*[–-]\s*(\d+)/);return m?[+m[1],+m[2]]:null};
+const fmtH=h=>{const hh=Math.floor(h),mm=Math.round((h-hh)*60);return (hh%12||12)+(mm?':'+String(mm).padStart(2,'0'):'')+(hh<12?'am':'pm')};
+let kprof=null,hid=[],showHid=false;
+const DEFPROF={age:7,from:9,to:14,days:['M','Tu','W','Th','F']};
+function fitIssues(c,p){if(!p)return [];const out=[];const a=ageOf(c);if(a&&(p.age<a[0]||p.age>a[1]))out.push(`ages ${a[0]}–${a[1]}`);const [st,en]=hrsOf(c);if(st!=null&&st>p.from)out.push(`starts ${fmtH(st)}`);if(en!=null&&en<p.to)out.push(`ends ${fmtH(en)}`);const d=parseDays(c.days);const miss=p.days.filter(x=>!d.has(x));if(d.size&&miss.length)out.push(`no ${miss.map(x=>({M:'Mon',Tu:'Tue',W:'Wed',Th:'Thu',F:'Fri'})[x]).join(', ')}`);return out}
+let prefs={},loadedFor=null,lastSaved='',saveT=null;
+let EXEC='';
+function prefState(){return JSON.stringify({k:kprof,h:hid,f:{q:flt.q,week:flt.week,cat:flt.cat,prov:flt.prov,drive:flt.drive,sort:flt.sort,show:[...flt.chips][0]||''},cmp})}
+function loadPrefs(k){loadedFor=k;kprof=null;hid=[];const raw=prefs[k];if(!raw)return;try{const p=JSON.parse(raw);kprof=p.k||null;hid=Array.isArray(p.h)?p.h:[];const f=p.f||{};Object.assign(flt,{q:f.q||'',week:f.week||'',cat:f.cat||'',prov:f.prov||'',drive:f.drive||20,sort:f.sort||'week',chips:new Set(f.show?[f.show]:[])});cmp=Array.isArray(p.cmp)?p.cmp:[];saveCmp();lastSaved=raw;
+  $('#q').value=flt.q;$('#fDrive').value=String(flt.drive);$('#fSort').value=flt.sort;$('#fShow').value=f.show||''}catch(e){}}
+function queueSave(){if(!cur||loadedFor!==cur)return;clearTimeout(saveT);saveT=setTimeout(async()=>{const st=prefState();if(st===lastSaved)return;try{await call('savePrefs',cur,st);lastSaved=st;prefs[cur]=st;const n=$('#savedNote');if(n){n.textContent='Saved ✓';setTimeout(()=>{n.textContent='Saves automatically'},2000)}}catch(e){}},1200)}
+function apply(d){
+  if(!d)return;
+  camps=(d.camps||[]).map(c=>({...c,id:String(c.id),cost:c.cost===''?null:Number(c.cost),drive:c.drive===''?'':Number(c.drive),week:String(c.week||''),wk:wkKey(String(c.week||'')),addedAt:String(c.addedAt||'')}));
+  kids=(d.kids||[]).map(k=>({...k,id:String(k.id)}));picks=d.picks||[];notes=d.notes||[];deadlines=(d.deadlines||[]).filter(x=>!/^Check Club SciKidz/.test(x.t)).concat(EXTRA,SCHOOL);rules=d.rules||[];
+  prefs=d.prefs||{};if(ONGAS&&d.url)EXEC=d.url;else if(!ONGAS)EXEC=location.origin+location.pathname;
+  if(cur&&!kids.some(k=>k.id===cur))cur=null;
+  if(cur&&loadedFor!==cur)loadPrefs(cur);
+  fillSelects();render();
+}
+async function write(fn,...a){busy++;status('Saving…');try{apply(await call(fn,...a));status('')}catch(e){status('That didn\'t save: '+(e&&e.message||'try again.'))}finally{busy--}}
+async function refresh(){if(busy||document.hidden||!CODE)return;try{apply(await call('getData'));$('#lock').hidden=true;if($('#status').textContent.startsWith('Can')||$('#status').textContent.startsWith('Loading'))status('')}catch(e){if(isLocked(e)){CODE='';ls.set('cc-crew','');showLock('The crew code changed. Ask your group for the new one.')}else status('Can\'t reach the board right now. It may be out of date.')}}
+
+function showLink(url,label){
+  const b=$('#linkbox');b.hidden=false;
+  b.innerHTML=`<strong>${esc(label||'Link')}</strong><div class="note">If it didn't open, press and hold (or right-click) to open it, or copy it into a new tab.</div><a class="btn" style="margin:8px 0" target="_blank" rel="noopener" href="${esc(url)}">Open link</a><input readonly value="${esc(url)}" onclick="this.select()"><button type="button" class="ghost small" id="lbClose" style="margin-top:8px">Close</button>`;
+  $('#lbClose').onclick=()=>{b.hidden=true};b.scrollIntoView?.({block:'nearest'});
+}
+function openOut(url,label){
+  let w=null;
+  try{w=window.open(url,'_blank')}catch(e){}
+  if(w){try{w.opener=null}catch(e){}return}
+  showLink(url,label);
+  try{window.top.location.href=url}catch(e){}
+}
+document.addEventListener('click',e=>{
+  const ic=e.target.closest('[data-ics]');
+  if(ic){e.preventDefault();const ev=ICS[+ic.dataset.ics];if(!ev)return;const txt=icsText(ev);
+    try{const u=URL.createObjectURL(new Blob([txt],{type:'text/calendar'}));const a=document.createElement('a');a.href=u;a.download=(ev.title||'camp').replace(/[^\w\- ]+/g,'').slice(0,40)+'.ics';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),5000)}
+    catch(err){openOut(gcalLink(ev),'Calendar')}
+    return}
+  const a=e.target.closest('a[href]');if(!a)return;
+  const h=a.getAttribute('href');
+  if(h.indexOf('https:')===0){e.preventDefault();openOut(h,a.textContent.trim())}
+});
+
+const TABS=['find','crew','guide','notes'];
+for(const t of TABS)$('#t-'+t).addEventListener('click',()=>{for(const u of TABS){$('#t-'+u).setAttribute('aria-selected',u===t);$('#v-'+u).hidden=u!==t}if(t==='guide'&&!$('#gKid').value&&cur){$('#gKid').value=cur;renderGuide()}});
+let qT;$('#q').addEventListener('input',e=>{clearTimeout(qT);qT=setTimeout(()=>{flt.q=e.target.value;limit=120;renderFind()},150)});
+$('#fWeek').addEventListener('change',e=>{flt.week=e.target.value;limit=120;renderFind()});
+$('#fCat').addEventListener('change',e=>{flt.cat=e.target.value;limit=120;renderFind()});
+$('#fDrive').addEventListener('change',e=>{flt.drive=+e.target.value;renderFind()});
+$('#fSort').addEventListener('change',e=>{flt.sort=e.target.value;renderFind()});
+$('#fProv').addEventListener('change',e=>{flt.prov=e.target.value;limit=120;renderFind()});$('#fShow').addEventListener('change',e=>{flt.chips=new Set(e.target.value?[e.target.value]:[]);limit=120;renderFind()});
+$('#more').addEventListener('click',()=>{limit+=120;renderFind()});
+$('#kids').addEventListener('click',e=>{
+  if(e.target.closest('#addKid')){openNeeds(false);$('#kName').focus();return}
+  const b=e.target.closest('[data-kid]');if(!b)return;cur=b.dataset.kid===cur?null:b.dataset.kid;ls.set('cc-kid',cur);if(cur){$('#gKid').value=cur;loadPrefs(cur);fillSelects()}render();
+});
+$('#kCancel').addEventListener('click',()=>{$('#kidForm').hidden=true});
+(function(){let a='';for(let i=3;i<=14;i++)a+=`<option value="${i}">${i}</option>`;$('#kAge').innerHTML=a;let f='',t='';for(let h=7;h<=10;h+=.5)f+=`<option value="${h}">${fmtH(h)}</option>`;for(let h=12;h<=18;h+=.5)t+=`<option value="${h}">${fmtH(h)}</option>`;$('#kFrom').innerHTML=f;$('#kTo').innerHTML=t;$('#kDays').innerHTML=DAYS.map(d=>`<label class="dchk"><input type="checkbox" value="${d}" checked>${d}</label>`).join('')})();
+let editingNeeds=false;
+function fillNeeds(p){p=p||DEFPROF;$('#kAge').value=String(p.age);$('#kFrom').value=String(p.from);$('#kTo').value=String(p.to);document.querySelectorAll('#kDays input').forEach(x=>x.checked=p.days.includes(x.value))}
+function readNeeds(){return {age:+$('#kAge').value,from:+$('#kFrom').value,to:+$('#kTo').value,days:[...document.querySelectorAll('#kDays input:checked')].map(x=>x.value)}}
+function openNeeds(edit){editingNeeds=edit;const f=$('#kidForm');f.hidden=false;$('#kName').closest('label').hidden=edit;$('#kFam').closest('label').hidden=edit;$('#kName').required=!edit;$('#kSubmit').textContent=edit?'Save':'Add kid';fillNeeds(edit?kprof:null);f.scrollIntoView?.({behavior:'smooth',block:'center'})}
+document.addEventListener('click',e=>{if(e.target.closest('#editNeeds'))openNeeds(true)});
+$('#kidForm').addEventListener('submit',async e=>{e.preventDefault();if(editingNeeds){kprof=readNeeds();$('#kidForm').hidden=true;editingNeeds=false;renderKids();renderFind();return}const name=$('#kName').value.trim();if(!name)return;const np=readNeeds();const before=new Set(kids.map(k=>k.id));
+  await write('addKid',name,$('#kFam').value.trim());const added=kids.find(k=>!before.has(k.id)&&k.name===name);if(added){cur=added.id;ls.set('cc-kid',cur);loadedFor=cur;kprof=np;render()}$('#kidForm').reset();$('#kidForm').hidden=true});
+document.addEventListener('change',e=>{const cb=e.target.closest('[data-cmp]');if(cb){const id=cb.dataset.cmp;if(cb.checked){if(cmp.length>=4){cb.checked=false;status('You can compare up to 4 camps. Remove one first.');setTimeout(()=>status(''),3000);return}cmp.push(id)}else cmp=cmp.filter(x=>x!==id);saveCmp();renderCompare();return}});
+$('#cmpopen').addEventListener('click',()=>{$('#cmppanel').hidden=false;renderCompare();$('#cmppanel').scrollIntoView?.({behavior:'smooth',block:'start'})});
+$('#cmpclear').addEventListener('click',()=>{cmp=[];saveCmp();$('#cmppanel').hidden=true;renderCompare();renderFind()});
+$('#cmppanel').addEventListener('click',e=>{if(e.target.closest('#cmpclose')){$('#cmppanel').hidden=true;return}const u=e.target.closest('[data-uncmp]');if(u){cmp=cmp.filter(x=>x!==u.dataset.uncmp);saveCmp();renderCompare();renderFind()}});
+document.addEventListener('change',e=>{const s=e.target.closest('[data-pick]');if(!s||!cur)return;write('setPick',cur,s.dataset.pick,s.value,ls.get('cc-name')||'')});
+$('#gKid').addEventListener('change',renderGuide);
+$('#print').addEventListener('click',()=>{try{window.print()}catch(e){status('Use your browser\'s Print menu to save this guide as a PDF.')}});
+const F=['name','provider','category','theme','week','days','hours','cost','ages','location','drive','link','notes'];
+function openForm(c){editing=c?c.id:null;$('#campForm').hidden=false;$('#cfTitle').textContent=c?'Edit camp session':'Add a camp session';$('#cfDelete').hidden=!c;
+  for(const f of F){const v=c?c[f]:'';$('#f-'+f).value=v==null||(typeof v==='number'&&isNaN(v))?'':v}$('#campForm').scrollIntoView({behavior:'smooth',block:'start'});$('#f-name').focus()}
+const REQ='[Camp request] ';
+function renderReqs(){const r=notes.filter(n=>String(n.text).startsWith(REQ));$('#reqList').innerHTML=r.length?'<h4 style="margin:14px 0 6px">Requests so far</h4>'+r.map(n=>`<div class="msg"><b>${esc(n.author||'Someone')}</b> <span class="note">${n.at?esc(new Date(n.at).toLocaleDateString('en-US',{month:'short',day:'numeric'})):''}</span><div>${esc(String(n.text).slice(REQ.length))}</div>${(u=>u?`<div class="note" style="margin-top:4px">${esc(String(u.text).replace('[Request update] ',''))}</div>`:'<div class="note" style="margin-top:4px">Being looked up. New camps show up with a yellow New badge.</div>')(notes.find(x=>x.id==='r-'+n.id))}</div>`).join(''):''}
+document.addEventListener('click',async e=>{if(!e.target.closest('#myLink'))return;const u=EXEC+'?kid='+encodeURIComponent(cur);try{await navigator.clipboard.writeText(u);status('Link copied. Bookmark it or text it to yourself to come back to this kid on any device.');setTimeout(()=>status(''),4000)}catch(x){showLink(u,'Your personal link')}});
+try{(ONGAS?f=>google.script.url.getLocation(f):f=>f({parameter:Object.fromEntries(new URLSearchParams(location.search))}))(l=>{const k=l&&l.parameter&&l.parameter.kid;if(k){cur=k;ls.set('cc-kid',k);loadedFor=null;if(kids.length){if(kids.some(x=>x.id===k)){loadPrefs(k);fillSelects();render()}}}})}catch(e){}
+$('#reqOpen').addEventListener('click',()=>{$('#reqName').value=ls.get('cc-name')||'';renderReqs();const d=$('#reqDlg');d.showModal?d.showModal():d.setAttribute('open','')});
+$('#reqCancel').addEventListener('click',()=>$('#reqDlg').close());
+$('#reqManual').addEventListener('click',()=>{$('#reqDlg').close();$('#t-find').click();openForm(null);$('#campForm').scrollIntoView?.({behavior:'smooth'})});
+$('#reqForm').addEventListener('submit',async e=>{e.preventDefault();const t=$('#reqText').value.trim();if(!t)return;const who=$('#reqName').value.trim();ls.set('cc-name',who);$('#reqSend').disabled=true;try{await write('addNote',who,REQ+t);$('#reqText').value='';renderReqs();status('Thanks! Your camp request was sent.');setTimeout(()=>status(''),3500)}finally{$('#reqSend').disabled=false}});
+document.addEventListener('click',e=>{if(e.target.closest('#togHid')){showHid=!showHid;if(!hid.length)showHid=false;limit=120;renderFind()}});
+$('#results').addEventListener('click',e=>{const hb=e.target.closest('[data-hide]');if(hb){if(!cur){status('Tap your kid\'s name first so hidden camps save to their list.');setTimeout(()=>status(''),3500);return}const id=hb.dataset.hide;hid=hid.includes(id)?hid.filter(x=>x!==id):hid.concat(id);if(!hid.length)showHid=false;renderFind();return}const sc=e.target.closest('[data-scroll]');if(sc){const r=sc.closest('.week').querySelector('.rail');r.scrollBy({left:+sc.dataset.scroll*r.clientWidth*0.9,behavior:'smooth'});return}const b=e.target.closest('[data-edit]');if(b)openForm(camps.find(c=>c.id===b.dataset.edit))});
+$('#cfCancel').addEventListener('click',()=>{$('#campForm').hidden=true});
+$('#cfDelete').addEventListener('click',async()=>{if(!editing)return;const b=$('#cfDelete');if(b.dataset.sure!=='1'){b.dataset.sure='1';b.textContent='Tap again to delete';return}
+  b.dataset.sure='';b.textContent='Delete';$('#campForm').hidden=true;await write('deleteCamp',editing)});
+$('#campForm').addEventListener('submit',async e=>{e.preventDefault();const data={id:editing||''};for(const f of F)data[f]=$('#f-'+f).value.trim();if(!data.name)return;$('#campForm').hidden=true;await write('saveCamp',data)});
+if(ls.get('cc-dl')==='closed')$('#dlbox').open=false;
+$('#dlbox').addEventListener('toggle',()=>ls.set('cc-dl',$('#dlbox').open?'':'closed'));
+$('#noteName').value=ls.get('cc-name')||'';
+$('#noteName').addEventListener('change',()=>ls.set('cc-name',$('#noteName').value.trim()));
+$('#noteForm').addEventListener('submit',async e=>{e.preventDefault();const text=$('#noteText').value.trim();if(!text)return;const who=$('#noteName').value.trim();ls.set('cc-name',who);await write('addNote',who,text);$('#noteText').value=''});
+$('#notes').addEventListener('click',e=>{const b=e.target.closest('[data-delnote]');if(b)write('deleteNote',b.dataset.delnote)});
+
+$('#lockForm').addEventListener('submit',async e=>{e.preventDefault();const v=$('#lockCode').value.trim();if(!v)return;CODE=v;$('#lockGo').disabled=true;$('#lockMsg').textContent='Checking…';try{apply(await call('getData'));ls.set('cc-crew',CODE);$('#lock').hidden=true;status('')}catch(x){CODE='';$('#lockMsg').textContent=isLocked(x)?'That code didn\'t work. Check with your group.':'Can\'t reach the board right now. Try again in a minute.'}finally{$('#lockGo').disabled=false}});
+render();if(CODE){status('Loading the camps…');refresh()}else showLock();setInterval(refresh,30000);document.addEventListener('visibilitychange',refresh);
+}
+</script>
+</body></html>
