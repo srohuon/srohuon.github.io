@@ -215,7 +215,7 @@ td.n,th.n{text-align:right;white-space:nowrap}
       <label>Week<select id="fWeek"><option value="">All weeks</option></select></label>
       <label>Subject<select id="fCat"><option value="">All subjects</option></select></label>
       <label>Provider<select id="fProv"><option value="">All providers</option></select></label>
-      <label>Show<select id="fShow"><option value="">All camps</option><option value="conf">Confirmed 2027 only</option><option value="new">New since last check</option><option value="mine">My kid's list</option><option value="picked">Has kids on it</option><option value="short">Standard day only</option><option value="fits">Fits my kid's needs</option><option value="sib">Same place as my other kids</option></select></label>
+      <label>Show<select id="fShow"><option value="">All camps</option><option value="new">New since last check</option><option value="mine">My kid's list</option><option value="picked">Has kids on it</option><option value="short">Standard day only</option><option value="fits">Fits my kid's needs</option><option value="sib">Same place as my other kids</option></select></label>
       <label id="driveL">Drive (est.)<select id="fDrive"><option value="20">20 min or less</option><option value="15">15 min or less</option><option value="10">10 min or less</option><option value="999">Any distance</option></select></label>
       <label>Sort<select id="fSort"><option value="week">By week</option><option value="camp">By camp (all its weeks)</option><option value="cost">Price, low to high</option><option value="drive">Closest first</option><option value="name">Name A–Z</option><option value="new">Newest added</option><option value="fit">Best fit for my kid</option><option value="sib">Same place as my other kids first</option></select></label>
     </div>
@@ -402,11 +402,11 @@ function card(c){
 function filtered(){
   const fold=x=>String(x).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();const q=fold(flt.q).trim(),ch=flt.chips;
   let list=camps.filter(c=>{
-    if(hid.includes(c.id)!==showHid)return false;
+    if(hid.includes(c.id)!==showHid)return false;if(flt.conf&&!/^2027/.test(c.week))return false;
     if(flt.week&&c.wk!==flt.week)return false;
     if(flt.prov&&(flt.prov.startsWith('pv:')?campProv(c)!==flt.prov.slice(3):c.provider!==flt.prov))return false;if(flt.cat&&(flt.cat.startsWith('theme:')?c.theme!==flt.cat.slice(6):subj(c)!==flt.cat))return false;
     {const d=dv(c);if(d!==''&&d!=null&&+d>flt.drive)return false}
-    for(const x of ch){if(x.startsWith('theme:')&&c.theme!==x.slice(6))return false;if(x==='conf'&&!/^2027/.test(c.week))return false;if(x==='new'&&!isNew(c))return false;if(x==='picked'&&!kidsOn(c.id).length)return false;if(x==='mine'&&!(cur&&pickFor(cur,c.id)&&STATUS[pickFor(cur,c.id).status]))return false;if(x==='short'&&ext(c))return false;if(x==='fits'&&fitIssues(c,kprof).length)return false;if(x==='sib'&&!sibMatch(c).length)return false}
+    for(const x of ch){if(x.startsWith('theme:')&&c.theme!==x.slice(6))return false;if(x==='new'&&!isNew(c))return false;if(x==='picked'&&!kidsOn(c.id).length)return false;if(x==='mine'&&!(cur&&pickFor(cur,c.id)&&STATUS[pickFor(cur,c.id).status]))return false;if(x==='short'&&ext(c))return false;if(x==='fits'&&fitIssues(c,kprof).length)return false;if(x==='sib'&&!sibMatch(c).length)return false}
     if(q){const hay=[c.name,c.provider,c.category,c.theme,c.location,c.id,c.notes,c.ages,fmtDay(c.wk)].join(' ');const hf=fold(hay);if(!q.split(/\s+/).every(w=>hf.includes(w)))return false}
     return true});
   const by={week:(a,b)=>(a.wk?0:1)-(b.wk?0:1)||String(a.wk).localeCompare(String(b.wk))||String(a.name).localeCompare(b.name),cost:(a,b)=>(a.cost||9999)-(b.cost||9999),drive:(a,b)=>((dv(a)===''?99:dv(a))||0)-((dv(b)===''?99:dv(b))||0),name:(a,b)=>String(a.name).localeCompare(b.name),camp:(a,b)=>String(a.wk).localeCompare(String(b.wk)),new:(a,b)=>String(b.addedAt).localeCompare(String(a.addedAt)),fit:(a,b)=>fitIssues(a,kprof).length-fitIssues(b,kprof).length||String(a.wk).localeCompare(String(b.wk)),sib:(a,b)=>(sibMatch(b).length?1:0)-(sibMatch(a).length?1:0)||fitIssues(a,kprof).length-fitIssues(b,kprof).length||String(a.wk).localeCompare(String(b.wk))};
@@ -416,7 +416,7 @@ function filtered(){
 }
 function renderFind(){queueSave();
   const list=filtered(),shown=list.slice(0,limit);
-  $('#count').innerHTML=`${showHid?'Hidden: ':''}${list.length} session${list.length===1?'':'s'}`+(hid.length?` <button type="button" class="ghost small" id="togHid">${showHid?'Back to all camps':'Show '+hid.length+' hidden'}</button>`:'');
+  $('#count').innerHTML=`${showHid?'Hidden: ':''}${list.length} session${list.length===1?'':'s'}`+` <label class="note" style="display:inline-flex;align-items:center;gap:4px;margin-left:8px;cursor:pointer"><input type="checkbox" id="confOnly"${flt.conf?' checked':''}> Confirmed 2027 only</label>`+(hid.length?` <button type="button" class="ghost small" id="togHid">${showHid?'Back to all camps':'Show '+hid.length+' hidden'}</button>`:'');
   $('#more').hidden=list.length<=limit;
   if(!list.length){$('#results').innerHTML='<p class="note">Nothing matches. Try clearing a filter or widening the drive time.</p>';return}
   if(flt.sort==='camp'){
@@ -520,8 +520,8 @@ function sibMatch(c){if(!cur)return [];const out=[];for(const p of picks){if(!ST
 function fitIssues(c,p){if(!p)return [];const out=[];if(!c.hours)out.push('hours not listed');const a=ageOf(c);if(a&&(p.age<a[0]||p.age>a[1]))out.push(`ages ${a[0]}–${a[1]}`);const [st,en]=hrsOf(c);if(st!=null&&st>p.from)out.push(`starts ${fmtH(st)}`);if(en!=null&&en<p.to)out.push(`ends ${fmtH(en)}`);const d=parseDays(c.days);const miss=p.days.filter(x=>!d.has(x));if(d.size&&miss.length)out.push(`no ${miss.map(x=>({M:'Mon',Tu:'Tue',W:'Wed',Th:'Thu',F:'Fri'})[x]).join(', ')}`);return out}
 let prefs={},loadedFor=null,lastSaved='',saveT=null;
 let EXEC='';
-function prefState(){return JSON.stringify({k:kprof,h:hid,g:gchk,f:{q:flt.q,week:flt.week,cat:flt.cat,prov:flt.prov,drive:flt.drive,sort:flt.sort,show:[...flt.chips][0]||''},cmp})}
-function loadPrefs(k){loadedFor=k;kprof=null;hid=[];gchk={};const raw=prefs[k];if(!raw)return;try{const p=JSON.parse(raw);kprof=p.k||null;hid=Array.isArray(p.h)?p.h:[];gchk=p.g&&typeof p.g==='object'?p.g:{};const f=p.f||{};Object.assign(flt,{q:f.q||'',week:f.week||'',cat:f.cat||'',prov:f.prov||'',drive:f.drive||20,sort:f.sort||'week',chips:new Set(f.show?[f.show]:[])});cmp=Array.isArray(p.cmp)?p.cmp:[];saveCmp();lastSaved=raw;
+function prefState(){return JSON.stringify({k:kprof,h:hid,g:gchk,f:{q:flt.q,week:flt.week,cat:flt.cat,prov:flt.prov,drive:flt.drive,sort:flt.sort,conf:!!flt.conf,show:[...flt.chips][0]||''},cmp})}
+function loadPrefs(k){loadedFor=k;kprof=null;hid=[];gchk={};const raw=prefs[k];if(!raw)return;try{const p=JSON.parse(raw);kprof=p.k||null;hid=Array.isArray(p.h)?p.h:[];gchk=p.g&&typeof p.g==='object'?p.g:{};const f=p.f||{};Object.assign(flt,{q:f.q||'',week:f.week||'',cat:f.cat||'',prov:f.prov||'',drive:f.drive||20,sort:f.sort||'week',conf:!!f.conf,chips:new Set(f.show?[f.show]:[])});cmp=Array.isArray(p.cmp)?p.cmp:[];saveCmp();lastSaved=raw;
   $('#q').value=flt.q;$('#fDrive').value=String(flt.drive);$('#fSort').value=flt.sort;$('#fShow').value=f.show||''}catch(e){}}
 function queueSave(){if(!cur||loadedFor!==cur||!mine(cur))return;clearTimeout(saveT);saveT=setTimeout(async()=>{const st=prefState();if(st===lastSaved)return;try{await call('savePrefs',cur,st,KEYS[cur]);lastSaved=st;prefs[cur]=st;const n=$('#savedNote');if(n){n.textContent='Saved ✓';setTimeout(()=>{n.textContent='Saves automatically'},2000)}}catch(e){}},1200)}
 function apply(d){
@@ -607,7 +607,7 @@ $('#reqOpen').addEventListener('click',()=>{$('#reqName').value=ls.get('cc-name'
 $('#reqCancel').addEventListener('click',()=>$('#reqDlg').close());
 $('#reqManual').addEventListener('click',()=>{$('#reqDlg').close();$('#t-find').click();openForm(null);$('#campForm').scrollIntoView?.({behavior:'smooth'})});
 $('#reqForm').addEventListener('submit',async e=>{e.preventDefault();const t=$('#reqText').value.trim();if(!t)return;const who=$('#reqName').value.trim();ls.set('cc-name',who);$('#reqSend').disabled=true;try{await write('addNote',who,REQ+t);$('#reqText').value='';renderReqs();status('Thanks! Your camp request was sent.');setTimeout(()=>status(''),3500)}finally{$('#reqSend').disabled=false}});
-document.addEventListener('click',e=>{if(e.target.closest('#togHid')){showHid=!showHid;if(!hid.length)showHid=false;limit=120;renderFind()}});
+document.addEventListener('change',e=>{if(e.target.id==='confOnly'){flt.conf=e.target.checked;limit=120;renderFind()}});document.addEventListener('click',e=>{if(e.target.closest('#togHid')){showHid=!showHid;if(!hid.length)showHid=false;limit=120;renderFind()}});
 $('#results').addEventListener('click',e=>{const op=e.target.closest('[data-open]');if(op){flt.q=op.dataset.open;$('#q').value=flt.q;flt.sort='week';$('#fSort').value='week';limit=120;renderFind();return}const hb=e.target.closest('[data-hide]');if(hb){if(!cur){status('Tap your kid\'s name first so hidden camps save to their list.');setTimeout(()=>status(''),3500);return}const id=hb.dataset.hide;hid=hid.includes(id)?hid.filter(x=>x!==id):hid.concat(id);if(!hid.length)showHid=false;renderFind();return}const sc=e.target.closest('[data-scroll]');if(sc){const r=sc.closest('.week').querySelector('.rail');r.scrollBy({left:+sc.dataset.scroll*r.clientWidth*0.9,behavior:'smooth'});return}const b=e.target.closest('[data-edit]');if(b)openForm(camps.find(c=>c.id===b.dataset.edit))});
 $('#cfCancel').addEventListener('click',()=>{$('#campForm').hidden=true});
 $('#cfDelete').addEventListener('click',async()=>{if(!editing)return;const b=$('#cfDelete');if(b.dataset.sure!=='1'){b.dataset.sure='1';b.textContent='Tap again to delete';return}
