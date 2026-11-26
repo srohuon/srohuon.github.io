@@ -410,7 +410,7 @@ function card(c){
 function filtered(){
   const fold=x=>String(x).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();const q=fold(flt.q).trim(),ch=flt.chips;
   let list=camps.filter(c=>{
-    if(hid.includes(c.id)!==showHid)return false;if(flt.conf&&!/^2027/.test(c.week))return false;
+    if(hid.includes(c.id)!==showHid)return false;if(flt.conf&&!/^2027/.test(c.week))return false;if(kprof&&kprof.age){const a=ageOf(c);if(a&&(kprof.age<a[0]||kprof.age>a[1]))return false}
     if(flt.week&&c.wk!==flt.week)return false;
     if(flt.prov&&(flt.prov.startsWith('pv:')?campProv(c)!==flt.prov.slice(3):c.provider!==flt.prov))return false;if(flt.cat&&(flt.cat.startsWith('theme:')?c.theme!==flt.cat.slice(6):subj(c)!==flt.cat))return false;
     {const d=dv(c);if(d!==''&&d!=null&&+d>flt.drive)return false}
@@ -424,7 +424,7 @@ function filtered(){
 }
 function renderFind(){queueSave();$('#clrFlt').hidden=!(flt.q||flt.week||flt.cat||flt.prov||+flt.drive!==20||flt.conf||flt.chips.size);
   const list=filtered(),shown=list.slice(0,limit);
-  $('#count').innerHTML=`${showHid?'Hidden: ':''}${list.length} session${list.length===1?'':'s'}`+(hid.length?` <button type="button" class="ghost small" id="togHid">${showHid?'Back to all camps':'Show '+hid.length+' hidden'}</button>`:'');
+  $('#count').innerHTML=`${showHid?'Hidden: ':''}${list.length} session${list.length===1?'':'s'}${kprof&&kprof.age&&cur?` for ${esc((kids.find(k=>k.id===cur)||{}).name||'')}, age ${esc(kprof.age)}`:''}`+(hid.length?` <button type="button" class="ghost small" id="togHid">${showHid?'Back to all camps':'Show '+hid.length+' hidden'}</button>`:'');
   $('#more').hidden=list.length<=limit;
   if(!list.length){$('#results').innerHTML='<p class="note">Nothing matches. Try clearing a filter or widening the drive time.</p>';return}
   if(flt.sort==='camp'){
