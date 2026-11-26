@@ -166,6 +166,8 @@ td.n,th.n{text-align:right;white-space:nowrap}
 @media (max-width:700px){.grow{grid-template-columns:52px minmax(0,1fr)}.grow .gact{grid-column:2;flex-wrap:wrap}}
 .topact{display:flex;gap:8px;align-items:center;margin-left:auto}.acct{position:relative}.acct summary{list-style:none;cursor:pointer;padding:6px 12px;border-radius:999px;background:rgba(255,255,255,.7);border:1.5px solid var(--line);font-weight:700;font-size:14px;white-space:nowrap}.acct summary::-webkit-details-marker{display:none}.acct summary::after{content:' ▾';font-size:11px}.acctm{position:absolute;right:0;top:calc(100% + 6px);z-index:20;background:var(--card);border:1.5px solid var(--line);border-radius:12px;padding:10px 12px;box-shadow:0 8px 24px rgba(0,0,0,.12);width:220px;display:grid;gap:8px}.acctm .note{margin:0}@media (max-width:700px){.acctm{left:0;right:auto}}
 .acctt{font-size:14px}.acctk{display:flex;justify-content:space-between;align-items:center;gap:6px;padding:4px 0}.acctk>span{display:inline-flex;gap:4px;align-items:center}.acctk i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px}.acctm hr{border:0;border-top:1px solid var(--line);margin:2px 0}.acctm{width:300px}.acctm .small{min-height:30px;font-size:12.5px;padding:3px 8px}
+.tabrow{display:flex;align-items:flex-end;justify-content:space-between;gap:8px 16px;flex-wrap:wrap;margin-top:20px}.tabrow .tabs{margin-top:0;flex:1 1 auto;min-width:0}.kidsw{display:flex;align-items:center;gap:8px;padding-bottom:6px}.kidsw .tag{padding:6px 14px;font-size:15px;min-height:0}.kidsw #savedNote{min-width:52px;font-size:12px}
+@media (max-width:700px){.tabrow{flex-direction:column-reverse;align-items:stretch}.kidsw{padding-bottom:0}}
 </style></head><body>
 <div id="lock" class="lock" hidden><form id="lockForm" class="lockcard"><h1 class="lockh">Camp Crew · Summer 2027</h1><p>This board is private to our group. Enter the crew code you were sent.</p><label>Crew code<input id="lockCode" autocomplete="off" autocapitalize="none" spellcheck="false" maxlength="60" required></label>
 <fieldset class="famsel"><legend>Your family</legend><label class="dchk"><input type="radio" name="famMode" value="have" checked> I have our family passcode</label><label class="dchk"><input type="radio" name="famMode" value="new"> We're new here</label></fieldset>
@@ -197,8 +199,6 @@ td.n,th.n{text-align:right;white-space:nowrap}
   <div id="linkbox" class="panel" hidden></div>
   <div id="cmpbar" class="cmpbar" hidden><span id="cmpcount"></span><button type="button" id="cmpopen">Compare side by side</button><button type="button" class="ghost small" id="cmpclear">Clear</button></div>
   <div id="cmppanel" class="panel" hidden></div>
-  <h2 class="who-h" style="font-size:22px;margin-bottom:8px">Who are you planning for?</h2>
-  <div class="kidbar" id="kids"></div>
   <div id="mine" class="row" style="gap:8px;margin:8px 0 4px;flex-wrap:wrap;align-items:center"></div>
   <form id="kidForm" class="panel grid" hidden>
     <label>Kid's first name<input id="kName" maxlength="40" required></label>
@@ -210,12 +210,12 @@ td.n,th.n{text-align:right;white-space:nowrap}
     <div class="row" style="align-self:end"><button type="submit" id="kSubmit">Add kid</button><button type="button" class="ghost" id="kCancel">Cancel</button></div>
   </form>
 
-  <div class="tabs" role="tablist">
+  <div class="tabrow"><div class="tabs" role="tablist">
     <button role="tab" id="t-find" aria-selected="true">Find camps</button>
     <button role="tab" id="t-crew" aria-selected="false">Our crew</button>
     <button role="tab" id="t-guide" aria-selected="false">Booking guide</button>
     <button role="tab" id="t-notes" aria-selected="false">Group notes</button>
-  </div>
+  </div><div class="kidsw"><span class="note">Planning for</span><div class="kidbar" id="kids"></div><span class="note" id="savedNote"></span></div></div>
 
   <section id="v-find">
     <div class="filters">
@@ -390,8 +390,8 @@ function renderDeadlines(){
 }
 function renderKids(){
   $('#acct').hidden=!ME;if(ME)$('#acctName').textContent=ME.name;const myKids=kids.filter(k=>MINE.includes(k.id));$('#acctKids').innerHTML=myKids.map(k=>`<div class="acctk"><span><i style="background:${kidColor(k.id)}"></i>${esc(k.name)}</span><span><button type="button" class="ghost small" data-editkid="${esc(k.id)}">Age &amp; hours</button><button type="button" class="ghost small" data-linkkid="${esc(k.id)}">Copy link</button></span></div>`).join('')||'<p class="note">No kids yet.</p>';
-  $('#kids').innerHTML=myKids.map(k=>`<button class="tag" style="--c:${kidColor(k.id)}" aria-pressed="${k.id===cur}" data-kid="${esc(k.id)}"><i></i>${esc(k.name)}</button>`).join('')+(MINE.length?'':`<button class="tag ghost" style="--c:var(--line)" id="addKid">+ Add your kid</button><span class="note">Add your kid to start marking camps.</span>`);
-  const ck=kids.find(k=>k.id===cur);$('#mine').innerHTML=ck&&!mine(ck.id)?`<form id="unlockForm" class="row" style="gap:8px;align-items:center;flex-wrap:wrap"><span class="note"><b>${esc(ck.name)}</b> · view only. ${pinned.includes(ck.id)?`Is ${esc(ck.name)} yours? Enter your family passcode to make changes on this device.`:`${esc(ck.name)} doesn't have a family passcode yet. If ${esc(ck.name)} is yours, set one now.`}</span><input id="unlockPin" type="password" minlength="4" maxlength="40" autocomplete="off" placeholder="Family passcode" style="max-width:200px"><button type="submit" class="small">${pinned.includes(ck.id)?'Unlock':'Set passcode'}</button></form>`:ck?`<span class="note"><b>${esc(ck.name)}</b>${kprof?`${kprof.zip?' · from '+esc(kprof.zip):''} · age ${kprof.age} · needs ${fmtH(kprof.from)}–${fmtH(kprof.to)}, ${esc(kprof.days.join(' '))}`:''} · <span id="savedNote">Saves automatically</span></span>${kprof?'':` <button type="button" class="ghost small" id="editNeeds">Add age &amp; hours</button>`}`:'';
+  $('#kids').innerHTML=myKids.map(k=>`<button class="tag" style="--c:${kidColor(k.id)}" aria-pressed="${k.id===cur}" data-kid="${esc(k.id)}" title="${esc((p=>p?[p.zip&&'from '+p.zip,'age '+p.age,'needs '+fmtH(p.from)+'–'+fmtH(p.to)+', '+p.days.join(' ')].filter(Boolean).join(' · '):'Age & hours not set')(k.id===cur?kprof:(()=>{try{return JSON.parse(prefs[k.id]||'{}').k}catch(e){return null}})()))}"><i></i>${esc(k.name)}</button>`).join('')+(MINE.length?'':`<button class="tag ghost" style="--c:var(--line)" id="addKid">+ Add your kid</button><span class="note">Add your kid to start marking camps.</span>`);
+  const ck=kids.find(k=>k.id===cur);$('#mine').innerHTML=ck&&!mine(ck.id)?`<form id="unlockForm" class="row" style="gap:8px;align-items:center;flex-wrap:wrap"><span class="note"><b>${esc(ck.name)}</b> · view only. ${pinned.includes(ck.id)?`Is ${esc(ck.name)} yours? Enter your family passcode to make changes on this device.`:`${esc(ck.name)} doesn't have a family passcode yet. If ${esc(ck.name)} is yours, set one now.`}</span><input id="unlockPin" type="password" minlength="4" maxlength="40" autocomplete="off" placeholder="Family passcode" style="max-width:200px"><button type="submit" class="small">${pinned.includes(ck.id)?'Unlock':'Set passcode'}</button></form>`:ck&&!kprof?`<span class="note">Add ${esc(ck.name)}'s age and hours so camps can be matched.</span> <button type="button" class="ghost small" id="editNeeds">Add age &amp; hours</button>`:'';$('#mine').hidden=!$('#mine').innerHTML;
   const g=$('#gKid'),v=g.value||cur||'';g.innerHTML='<option value="">Choose a kid</option>'+kids.filter(k=>MINE.includes(k.id)).map(k=>`<option value="${esc(k.id)}">${esc(k.name)}</option>`).join('');g.value=kids.some(k=>k.id===v)?v:'';
 }
 function pills(cid){return kidsOn(cid).map(p=>{const k=kids.find(x=>x.id===p.kid);const cls={registered:'',waitlist:'w',backup:'k',interested:'i',favorite:'i'}[p.status];return `<span class="pill ${cls}" style="--c:${kidColor(k.id)}" title="${esc(STATUS[p.status])}">${esc(k.name)}${p.status==='registered'?' ✓':p.status==='waitlist'?' (wait)':p.status==='backup'?' (backup)':p.status==='favorite'?' ★':''}</span>`}).join('')}
@@ -537,7 +537,7 @@ let EXEC='';
 function prefState(){return JSON.stringify({k:kprof,h:hid,g:gchk,r:rnk,f:{q:flt.q,week:flt.week,cat:flt.cat,prov:flt.prov,drive:flt.drive,sort:flt.sort,conf:!!flt.conf,from:flt.from||'',show:[...flt.chips][0]||''},cmp})}
 function loadPrefs(k){loadedFor=k;kprof=null;hid=[];gchk={};rnk={};const raw=prefs[k];if(!raw)return;try{const p=JSON.parse(raw);kprof=p.k||null;hid=Array.isArray(p.h)?p.h:[];gchk=p.g&&typeof p.g==='object'?p.g:{};rnk=p.r&&typeof p.r==='object'?p.r:{};const f=p.f||{};Object.assign(flt,{q:f.q||'',week:f.week||'',cat:f.cat||'',prov:f.prov||'',drive:f.drive||20,sort:f.sort||'week',conf:!!f.conf,from:f.from||'',chips:new Set(f.show?[f.show]:[])});cmp=Array.isArray(p.cmp)?p.cmp:[];saveCmp();lastSaved=raw;
   $('#q').value=flt.q;$('#fDrive').value=String(flt.drive);$('#fSort').value=flt.sort;$('#fShow').value=f.show||'';$('#confOnly').checked=!!flt.conf}catch(e){}}
-function queueSave(){if(!cur||loadedFor!==cur||!mine(cur))return;clearTimeout(saveT);saveT=setTimeout(async()=>{const st=prefState();if(st===lastSaved)return;try{await call('savePrefs',cur,st,KEYS[cur]);lastSaved=st;prefs[cur]=st;const n=$('#savedNote');if(n){n.textContent='Saved ✓';setTimeout(()=>{n.textContent='Saves automatically'},2000)}}catch(e){}},1200)}
+function queueSave(){if(!cur||loadedFor!==cur||!mine(cur))return;clearTimeout(saveT);saveT=setTimeout(async()=>{const st=prefState();if(st===lastSaved)return;try{await call('savePrefs',cur,st,KEYS[cur]);lastSaved=st;prefs[cur]=st;const n=$('#savedNote');if(n){n.textContent='Saved ✓';setTimeout(()=>{n.textContent=''},2000)}}catch(e){}},1200)}
 function apply(d){
   if(!d)return;
   camps=(d.camps||[]).map(c=>({...c,id:String(c.id),cost:c.cost===''?null:Number(c.cost),drive:c.drive===''?'':Number(c.drive),week:String(c.week||''),wk:wkKey(String(c.week||'')),addedAt:String(c.addedAt||'')}));
