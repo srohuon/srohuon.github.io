@@ -338,11 +338,11 @@ const calLinks=e=>{if(!e)return'';ICS.push(e);return `<span class="cal">Add to: 
 const dlEvent=d=>{const t=String(d.d);const e={title:d.t,start:D(t),details:d.x+(d.est?' (Date estimated from 2026.)':'')+' '+(safeUrl(d.l)||'')};
   if(t.includes('T')){const hm=t.slice(11,16).replace(':','');e.time=hm+'00';e.timeEnd=pad(+hm.slice(0,2)+1)+hm.slice(2)+'00'}return e};
 
-const PROV={school:{n:'School calendar (HCPSS)',c:'#c2410c'},rp:{n:'Howard County Rec & Parks',c:'#0f4c5c'},ca:{n:'Columbia Association',c:'#7a4fd6'},sk:{n:'Club SciKidz Maryland (direct)',c:'#d9488b'},all:{n:'All camps',c:'#5c6b6e'},other:{n:'Other provider',c:'#5c6b6e'}};
-const pvKey=n=>n==='Howard County Rec & Parks'?'rp':n==='Columbia Association'?'ca':/^Club SciKidz/.test(n)?'sk':'other';
+const PROV={school:{n:'School calendar (HCPSS)',c:'#c2410c'},rp:{n:'Howard County Rec & Parks',c:'#0f4c5c'},ca:{n:'Columbia Association',c:'#7a4fd6'},sk:{n:'Club SciKidz Maryland (direct)',c:'#d9488b'},jc:{n:'J Camps (JCC of Greater Baltimore)',c:'#e8590c'},ym:{n:'Y in Central Maryland',c:'#1c7ed6'},gc:{n:'Glenelg Country School',c:'#2b8a3e'},tr:{n:'Trinity School',c:'#c92a2a'},dir:{n:'Other Howard County camps (book on their sites)',c:'#a07a00'},all:{n:'All camps',c:'#5c6b6e'},other:{n:'Other provider',c:'#5c6b6e'}};
+const PVN={'J Camps (JCC of Greater Baltimore)':'jc','Y in Central Maryland':'ym','Glenelg Country School':'gc','Trinity School':'tr'};const pvKey=n=>n==='Howard County Rec & Parks'?'rp':n==='Columbia Association'?'ca':/^Club SciKidz/.test(n)?'sk':PVN[n]||'other';
 const provChip=(k,label)=>`<span class="prov" style="--pc:${PROV[k].c}">${esc(label||PROV[k].n)}</span>`;
 const provOf=d=>d.p?d.p:/ActiveNet|Rec & Parks/.test(d.t)&&!/Columbia/.test(d.t)?'rp':/Columbia Association/.test(d.t)?'ca':/Club SciKidz/.test(d.t)?'sk':'all';
-const campProv=c=>/^RP/.test(c.id)?'rp':c.provider==='Columbia Association'?'ca':/^Club SciKidz/.test(c.provider)?'sk':'other';
+const campProv=c=>/^RP/.test(c.id)?'rp':/^DIR-/.test(c.id)?'dir':c.provider==='Columbia Association'?'ca':/^Club SciKidz/.test(c.provider)?'sk':PVN[c.provider]||'other';
 function appliesTo(p){
   if(p==='school')return 'Howard County Public Schools families: sets when summer camp weeks start and end';
   const list=p==='all'?camps:camps.filter(c=>campProv(c)===p);
@@ -492,7 +492,7 @@ function fillSelects(){
   const w=$('#fWeek'),c=$('#fCat');
   w.innerHTML='<option value="">All weeks</option>'+wk.map(x=>`<option value="${esc(x)}">Week of ${esc(fmtDay(x))}</option>`).join('');w.value=flt.week;
   const pc={},vc={};camps.forEach(x=>{const k=campProv(x);if(k!=='other')pc[k]=(pc[k]||0)+1;if(x.provider)vc[x.provider]=(vc[x.provider]||0)+1});const pr=$('#fProv');
-  pr.innerHTML='<option value="">All providers</option><optgroup label="Book through">'+['rp','ca','sk'].filter(k=>pc[k]).map(k=>`<option value="pv:${k}">${esc(PROV[k].n)} (${pc[k]})</option>`).join('')+'</optgroup><optgroup label="Camp company">'+Object.keys(vc).sort((a,b)=>a.localeCompare(b)).map(x=>`<option value="${esc(x)}">${esc(x)} (${vc[x]})</option>`).join('')+'</optgroup>';pr.value=flt.prov;if(pr.value!==flt.prov){flt.prov='';pr.value=''}
+  pr.innerHTML='<option value="">All providers</option><optgroup label="Book through">'+['rp','ca','sk','jc','ym','gc','tr','dir','other'].filter(k=>pc[k]).map(k=>`<option value="pv:${k}">${esc(PROV[k].n)} (${pc[k]})</option>`).join('')+'</optgroup><optgroup label="Camp company">'+Object.keys(vc).sort((a,b)=>a.localeCompare(b)).map(x=>`<option value="${esc(x)}">${esc(x)} (${vc[x]})</option>`).join('')+'</optgroup>';pr.value=flt.prov;if(pr.value!==flt.prov){flt.prov='';pr.value=''}
   const cnt={};camps.forEach(x=>{const k=subj(x);cnt[k]=(cnt[k]||0)+1});const th={};camps.forEach(x=>{if(x.theme)th[x.theme]=(th[x.theme]||0)+1});
   c.innerHTML='<option value="">All subjects</option>'+Object.keys(cnt).sort().map(x=>`<option value="${esc(x)}">${esc(x)} (${cnt[x]})</option>`).join('');c.value=flt.cat;if(c.value!==flt.cat){flt.cat='';c.value=''}
 }
