@@ -229,6 +229,7 @@ td.n,th.n{text-align:right;white-space:nowrap}
       <span class="note" id="count"></span>
       <span class="key"><span><i class="ks"></i>Confirmed 2027</span><span><i class="kd"></i>Predicted from 2026</span></span>
       <label class="confchk"><input type="checkbox" id="confOnly"> Show confirmed only</label>
+      <button type="button" class="ghost small" id="clrFlt" hidden>✕ Clear choices</button>
       <details class="about"><summary>About these dates</summary><div>Most dates and prices come from the summer 2026 guides and are shown on the matching 2027 week. Sessions marked <b>2027 dates confirmed</b> are already published and have a solid outline. Dashed outlines are predictions based on 2026. When the 2027 guides come out in January, new sessions get a yellow <b>New</b> badge. Drive times are rough estimates from each kid's home ZIP code (Clarksville if none is set).</div></details>
     </div>
     <div id="results"></div>
@@ -421,7 +422,7 @@ function filtered(){
   if(cur){const R={registered:0,interested:1,favorite:2,waitlist:3,backup:4};const rk=c=>{const p=pickFor(cur,c.id);return p&&p.status in R?R[p.status]:9};list.sort((a,b)=>rk(a)-rk(b))}
   return list;
 }
-function renderFind(){queueSave();
+function renderFind(){queueSave();$('#clrFlt').hidden=!(flt.q||flt.week||flt.cat||flt.prov||+flt.drive!==20||flt.conf||flt.chips.size);
   const list=filtered(),shown=list.slice(0,limit);
   $('#count').innerHTML=`${showHid?'Hidden: ':''}${list.length} session${list.length===1?'':'s'}`+(hid.length?` <button type="button" class="ghost small" id="togHid">${showHid?'Back to all camps':'Show '+hid.length+' hidden'}</button>`:'');
   $('#more').hidden=list.length<=limit;
@@ -576,6 +577,7 @@ $('#fDrive').addEventListener('change',e=>{flt.drive=+e.target.value;renderFind(
 $('#fSort').addEventListener('change',e=>{flt.sort=e.target.value;renderFind()});
 $('#fProv').addEventListener('change',e=>{flt.prov=e.target.value;limit=120;renderFind()});$('#fShow').addEventListener('change',e=>{flt.chips=new Set(e.target.value?[e.target.value]:[]);limit=120;renderFind()});
 $('#more').addEventListener('click',()=>{limit+=120;renderFind()});
+$('#clrFlt').addEventListener('click',()=>{Object.assign(flt,{q:'',week:'',cat:'',prov:'',drive:20,conf:false,chips:new Set()});$('#q').value='';$('#fWeek').value='';$('#fCat').value='';$('#fProv').value='';$('#fDrive').value='20';$('#fShow').value='';$('#confOnly').checked=false;limit=120;renderFind()});
 $('#kids').addEventListener('click',e=>{
   if(e.target.closest('#addKid')){openNeeds(false);$('#kName').focus();return}
   const b=e.target.closest('[data-kid]');if(!b)return;cur=b.dataset.kid===cur?null:b.dataset.kid;ls.set('cc-kid',cur);if(cur){$('#gKid').value=cur;loadPrefs(cur);fillSelects()}render();
