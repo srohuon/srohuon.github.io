@@ -95,6 +95,7 @@ label{font-size:13px;font-weight:700;display:grid;gap:3px}
 .cmpbar .ghost{color:var(--bg);border-color:rgba(255,255,255,.4)}
 .cmptable th{background:var(--lake2);min-width:150px}.cmptable td{min-width:180px}
 .rail>.card{scroll-snap-align:start}
+.famsel{border:0;padding:0;margin:0}.famsel legend{font-weight:700;font-size:14px;margin-bottom:4px}.famsel .dchk{display:flex;margin:4px 0}
 .lock{position:fixed;inset:0;z-index:50;display:grid;place-items:center;padding:16px;background:linear-gradient(115deg,#ffd9de,#ffe6cc,#fff5bf,#d6f5dc,#d4ecff,#e9e0ff)}.lock[hidden]{display:none}.lockcard{background:#fff;border-radius:22px;padding:26px;max-width:420px;width:100%;box-shadow:0 10px 40px rgba(31,35,51,.15);display:grid;gap:12px;border-top:8px solid transparent;border-image:var(--rb) 1}.lockh{font-size:30px;background:linear-gradient(90deg,#e8173f,#f06a00,#d99a00,#1f9d4c,#1b7fe0,#7a3ff2);-webkit-background-clip:text;background-clip:text;color:transparent}.lockcard p{margin:0}.lockcard input{font-size:18px}
 body{background:radial-gradient(900px 500px at 0% 30%,rgba(255,200,61,.10),transparent 60%),radial-gradient(900px 600px at 100% 60%,rgba(139,92,246,.09),transparent 60%),radial-gradient(800px 500px at 30% 100%,rgba(62,196,109,.09),transparent 60%),var(--bg)}
 .tabs{border-bottom:0;position:relative}.tabs::after{content:'';position:absolute;left:0;right:0;bottom:0;height:4px;border-radius:4px;background:var(--rb);opacity:.85}
@@ -149,7 +150,12 @@ td.n,th.n{text-align:right;white-space:nowrap}
 @media(max-width:700px){.filters>label{flex:0 0 150px}.filters>label.wide{flex:0 0 210px}.filters .wide{grid-column:1/-1}table{font-size:13px}}
 @media print{header,.kidbar,.tabs,#status,.noprint,section:not(#v-guide),#kidForm,h2.who-h{display:none!important}body{background:#fff}.band{padding:0}.guide{border:0;padding:0}a{text-decoration:none}}
 </style></head><body>
-<div id="lock" class="lock" hidden><form id="lockForm" class="lockcard"><h1 class="lockh">Camp Crew · Summer 2027</h1><p>This board is private to our group. Enter the crew code you were sent.</p><label>Crew code<input id="lockCode" autocomplete="off" autocapitalize="none" spellcheck="false" maxlength="60" required></label><button type="submit" id="lockGo">Open the board</button><p id="lockMsg" class="note" role="status"></p></form></div>
+<div id="lock" class="lock" hidden><form id="lockForm" class="lockcard"><h1 class="lockh">Camp Crew · Summer 2027</h1><p>This board is private to our group. Enter the crew code you were sent.</p><label>Crew code<input id="lockCode" autocomplete="off" autocapitalize="none" spellcheck="false" maxlength="60" required></label>
+<fieldset class="famsel"><legend>Your family</legend><label class="dchk"><input type="radio" name="famMode" value="have" checked> I have our family passcode</label><label class="dchk"><input type="radio" name="famMode" value="new"> We're new here</label></fieldset>
+<label id="famNameL" hidden>Family name<input id="famName" maxlength="40" placeholder="e.g. The Rohbins"></label>
+<label>Family passcode<input id="famPin" type="password" autocomplete="off" minlength="4" maxlength="40" required placeholder="At least 4 characters"></label>
+<p class="note" id="famHint">Your family passcode keeps your kids' picks yours. Use it on your phone and your computer.</p>
+<button type="submit" id="lockGo">Open the board</button><p id="lockMsg" class="note" role="status"></p></form></div>
 <header class="band"><div class="wrap">
   <div class="toprow"><h1>Camp Crew · Summer 2027</h1><button type="button" id="reqOpen" class="reqbtn">+ Suggest a camp</button></div>
   <dialog id="reqDlg" class="reqdlg"><form id="reqForm" method="dialog">
@@ -179,8 +185,6 @@ td.n,th.n{text-align:right;white-space:nowrap}
   <div id="mine" class="row" style="gap:8px;margin:8px 0 4px;flex-wrap:wrap;align-items:center"></div>
   <form id="kidForm" class="panel grid" hidden>
     <label>Kid's first name<input id="kName" maxlength="40" required></label>
-    <label>Family (e.g. "the Parks")<input id="kFam" maxlength="40"></label>
-    <label class="needsonly">Family passcode<input id="kPin" type="password" minlength="4" maxlength="40" autocomplete="off" placeholder="At least 4 characters"><small class="note">Only your family uses this to change your kid's camps, on any phone or computer.</small></label>
     <label>Age this summer<select id="kAge"></select></label>
     <label>Care needed from<select id="kFrom"></select></label>
     <label>Until<select id="kTo"></select></label>
@@ -266,14 +270,14 @@ const saveCmp=()=>{try{localStorage.setItem('cc-cmp',JSON.stringify(cmp))}catch(
 const flt={q:'',week:'',cat:'',prov:'',drive:20,sort:'week',chips:new Set()};
 const ls={get:k=>{try{return localStorage.getItem(k)}catch(e){return null}},set:(k,v)=>{try{v?localStorage.setItem(k,v):localStorage.removeItem(k)}catch(e){}}};
 cur=ls.get('cc-kid');
-let CODE=ls.get('cc-crew')||'';let pinned=[];
+let CODE=ls.get('cc-crew')&&ls.get('cc-fam')?{c:ls.get('cc-crew'),f:ls.get('cc-fam')}:null;let MINE=[],ME=null;let pinned=[];
 let KEYS={};try{KEYS=JSON.parse(ls.get('cc-keys')||'{}')||{}}catch(e){}
 const saveKeys=()=>ls.set('cc-keys',JSON.stringify(KEYS));
-const mine=k=>!!(k&&KEYS[k]);
+const mine=k=>!!(k&&MINE.includes(k));
 const API='https://script.google.com/macros/s/AKfycbwyvhpXCTl23VpOf49vAY7Ue0lP6aiVTGGZYqQrPRHQUTWROTO4cjOlD-ReSQiJvSLX/exec';
 const ONGAS=!!(window.google&&google.script&&google.script.run);
 const call=(fn,...a)=>ONGAS?new Promise((res,rej)=>google.script.run.withSuccessHandler(res).withFailureHandler(rej)[fn](CODE,...a)):fetch(API,{method:'POST',credentials:'omit',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({fn,args:[CODE,...a]})}).then(r=>r.json()).then(j=>{if(!j.ok)throw new Error(j.error||'error');return j.data});
-const isLocked=e=>/LOCKED/.test(String(e&&e.message||e));
+const isLocked=e=>/LOCKED|FAMILY/.test(String(e&&e.message||e));
 function showLock(msg){const L=$('#lock');L.hidden=false;$('#lockMsg').textContent=msg||'';status('');setTimeout(()=>$('#lockCode').focus(),50)}
 const status=t=>{const b=$('#status');b.hidden=!t;b.textContent=t||''};
 const kidColor=id=>{const i=kids.findIndex(k=>k.id===id);return COLORS[(i<0?0:i)%COLORS.length]};
@@ -363,10 +367,10 @@ function renderDeadlines(){
   $('#rules').innerHTML=rules.map(r=>`<li>${esc(r)}</li>`).join('');
 }
 function renderKids(){
-  $('#kids').innerHTML=kids.map(k=>`<button class="tag" style="--c:${kidColor(k.id)}" aria-pressed="${k.id===cur}" data-kid="${esc(k.id)}"><i></i>${esc(k.name)}${k.family?` <small>${esc(k.family)}</small>`:''}</button>`).join('')
-   +`<button class="tag ghost" style="--c:var(--line)" id="addKid">+ Add a kid</button>`+(kids.length?'':'<span class="note">Add your kid, then tap their name to mark camps.</span>');
+  $('#kids').innerHTML=(ME?`<span class="note" style="align-self:center"><b>${esc(ME.name)}</b> · <button type="button" class="ghost small" id="switchFam">Switch family</button></span>`:'')+kids.filter(k=>MINE.includes(k.id)).map(k=>`<button class="tag" style="--c:${kidColor(k.id)}" aria-pressed="${k.id===cur}" data-kid="${esc(k.id)}"><i></i>${esc(k.name)}${k.family?` <small>${esc(k.family)}</small>`:''}</button>`).join('')
+   +`<button class="tag ghost" style="--c:var(--line)" id="addKid">+ Add a kid</button>`+(MINE.length?'':'<span class="note">Add your kid to start marking camps.</span>');
   const ck=kids.find(k=>k.id===cur);$('#mine').innerHTML=ck&&!mine(ck.id)?`<form id="unlockForm" class="row" style="gap:8px;align-items:center;flex-wrap:wrap"><span class="note"><b>${esc(ck.name)}</b> · view only. ${pinned.includes(ck.id)?`Is ${esc(ck.name)} yours? Enter your family passcode to make changes on this device.`:`${esc(ck.name)} doesn't have a family passcode yet. If ${esc(ck.name)} is yours, set one now.`}</span><input id="unlockPin" type="password" minlength="4" maxlength="40" autocomplete="off" placeholder="Family passcode" style="max-width:200px"><button type="submit" class="small">${pinned.includes(ck.id)?'Unlock':'Set passcode'}</button></form>`:ck?`<span class="note"><b>${esc(ck.name)}</b>${kprof?` · age ${kprof.age} · needs ${fmtH(kprof.from)}–${fmtH(kprof.to)}, ${esc(kprof.days.join(' '))}`:''} · picks, compare list and filters <span id="savedNote">save automatically</span>.</span> <button type="button" class="ghost small" id="editNeeds">${kprof?'Edit':'Add'} age &amp; hours</button> <button type="button" class="ghost small" id="myLink">Copy ${esc(ck.name)}'s link</button>`:'';
-  const g=$('#gKid'),v=g.value||cur||'';g.innerHTML='<option value="">Choose a kid</option>'+kids.map(k=>`<option value="${esc(k.id)}">${esc(k.name)}</option>`).join('');g.value=kids.some(k=>k.id===v)?v:'';
+  const g=$('#gKid'),v=g.value||cur||'';g.innerHTML='<option value="">Choose a kid</option>'+kids.filter(k=>MINE.includes(k.id)).map(k=>`<option value="${esc(k.id)}">${esc(k.name)}</option>`).join('');g.value=kids.some(k=>k.id===v)?v:'';
 }
 function pills(cid){return kidsOn(cid).map(p=>{const k=kids.find(x=>x.id===p.kid);const cls={registered:'',waitlist:'w',backup:'k',interested:'i',favorite:'i'}[p.status];return `<span class="pill ${cls}" style="--c:${kidColor(k.id)}" title="${esc(STATUS[p.status])}">${esc(k.name)}${p.status==='registered'?' ✓':p.status==='waitlist'?' (wait)':p.status==='backup'?' (backup)':p.status==='favorite'?' ★':''}</span>`}).join('')}
 function card(c){
@@ -485,13 +489,14 @@ function apply(d){
   if(!d)return;
   camps=(d.camps||[]).map(c=>({...c,id:String(c.id),cost:c.cost===''?null:Number(c.cost),drive:c.drive===''?'':Number(c.drive),week:String(c.week||''),wk:wkKey(String(c.week||'')),addedAt:String(c.addedAt||'')}));
   kids=(d.kids||[]).map(k=>({...k,id:String(k.id)}));picks=d.picks||[];notes=d.notes||[];deadlines=(d.deadlines||[]).filter(x=>!/^Check Club SciKidz/.test(x.t)).concat(EXTRA,SCHOOL);rules=d.rules||[];
+  if(d.mine)MINE=d.mine.map(String);if(d.me)ME=d.me;
   prefs=d.prefs||{};pinned=d.pinned||[];if(ONGAS&&d.url)EXEC=d.url;else if(!ONGAS)EXEC=location.origin+location.pathname;
-  if(cur&&!kids.some(k=>k.id===cur))cur=null;
+  if(cur&&(!kids.some(k=>k.id===cur)||!MINE.includes(cur)))cur=null;if(!cur&&MINE.length){cur=MINE[0];ls.set('cc-kid',cur)}
   if(cur&&loadedFor!==cur)loadPrefs(cur);
   fillSelects();render();
 }
 async function write(fn,...a){busy++;status('Saving…');try{apply(await call(fn,...a));status('')}catch(e){status('That didn\'t save: '+(e&&e.message||'try again.'))}finally{busy--}}
-async function refresh(){if(busy||document.hidden||!CODE)return;try{apply(await call('getData'));$('#lock').hidden=true;if($('#status').textContent.startsWith('Can')||$('#status').textContent.startsWith('Loading'))status('')}catch(e){if(isLocked(e)){CODE='';ls.set('cc-crew','');showLock('The crew code changed. Ask your group for the new one.')}else status('Can\'t reach the board right now. It may be out of date.')}}
+async function refresh(){if(busy||document.hidden||!CODE)return;try{apply(await call('getData'));$('#lock').hidden=true;if($('#status').textContent.startsWith('Can')||$('#status').textContent.startsWith('Loading'))status('')}catch(e){if(isLocked(e)){const fam=/FAMILY/.test(String(e&&e.message));CODE=null;if(fam)ls.set('cc-fam','');else ls.set('cc-crew','');showLock(fam?'Please enter your family passcode again.':'The crew code changed. Ask your group for the new one.')}else status('Can\'t reach the board right now. It may be out of date.')}}
 
 function showLink(url,label){
   const b=$('#linkbox');b.hidden=false;
@@ -534,10 +539,10 @@ $('#kCancel').addEventListener('click',()=>{$('#kidForm').hidden=true});
 let editingNeeds=false;
 function fillNeeds(p){p=p||DEFPROF;$('#kAge').value=String(p.age);$('#kFrom').value=String(p.from);$('#kTo').value=String(p.to);document.querySelectorAll('#kDays input').forEach(x=>x.checked=p.days.includes(x.value))}
 function readNeeds(){return {age:+$('#kAge').value,from:+$('#kFrom').value,to:+$('#kTo').value,days:[...document.querySelectorAll('#kDays input:checked')].map(x=>x.value)}}
-function openNeeds(edit){editingNeeds=edit;const f=$('#kidForm');f.hidden=false;$('#kName').closest('label').hidden=edit;$('#kFam').closest('label').hidden=edit;$('#kPin').closest('label').hidden=edit;$('#kName').required=!edit;$('#kPin').required=!edit;$('#kSubmit').textContent=edit?'Save':'Add kid';fillNeeds(edit?kprof:null);f.scrollIntoView?.({behavior:'smooth',block:'center'})}
+function openNeeds(edit){editingNeeds=edit;const f=$('#kidForm');f.hidden=false;$('#kName').closest('label').hidden=edit;$('#kName').required=!edit;$('#kSubmit').textContent=edit?'Save':'Add kid';fillNeeds(edit?kprof:null);f.scrollIntoView?.({behavior:'smooth',block:'center'})}
 document.addEventListener('click',e=>{if(e.target.closest('#editNeeds'))openNeeds(true)});
 $('#kidForm').addEventListener('submit',async e=>{e.preventDefault();if(editingNeeds){kprof=readNeeds();$('#kidForm').hidden=true;editingNeeds=false;renderKids();renderFind();return}const name=$('#kName').value.trim();if(!name)return;const np=readNeeds();const before=new Set(kids.map(k=>k.id));
-  let added=null;busy++;status('Saving…');try{const pin=$('#kPin').value.trim();const d=await call('addKid',name,$('#kFam').value.trim(),pin);if(d&&d.newKid){KEYS[d.newKid]=pin;saveKeys()}apply(d);added=d&&d.newKid?kids.find(k=>k.id===d.newKid):null;status('')}catch(x){status('That didn\'t save: '+(x&&x.message||'try again.'))}finally{busy--}if(added){cur=added.id;ls.set('cc-kid',cur);loadedFor=cur;kprof=np;render()}$('#kidForm').reset();$('#kidForm').hidden=true});
+  let added=null;busy++;status('Saving…');try{const d=await call('addKid',name);if(d&&d.newKid&&!MINE.includes(d.newKid))MINE.push(d.newKid);apply(d);added=d&&d.newKid?kids.find(k=>k.id===d.newKid):null;status('')}catch(x){status('That didn\'t save: '+(x&&x.message||'try again.'))}finally{busy--}if(added){cur=added.id;ls.set('cc-kid',cur);loadedFor=cur;kprof=np;render()}$('#kidForm').reset();$('#kidForm').hidden=true});
 document.addEventListener('change',e=>{const cb=e.target.closest('[data-cmp]');if(cb){const id=cb.dataset.cmp;if(cb.checked){if(cmp.length>=4){cb.checked=false;status('You can compare up to 4 camps. Remove one first.');setTimeout(()=>status(''),3000);return}cmp.push(id)}else cmp=cmp.filter(x=>x!==id);saveCmp();renderCompare();return}});
 $('#cmpopen').addEventListener('click',()=>{$('#cmppanel').hidden=false;renderCompare();$('#cmppanel').scrollIntoView?.({behavior:'smooth',block:'start'})});
 $('#cmpclear').addEventListener('click',()=>{cmp=[];saveCmp();$('#cmppanel').hidden=true;renderCompare();renderFind()});
@@ -553,6 +558,7 @@ function renderReqs(){const r=notes.filter(n=>String(n.text).startsWith(REQ));$(
 document.addEventListener('click',async e=>{if(!e.target.closest('#myLink'))return;const u=EXEC+'?kid='+encodeURIComponent(cur);try{await navigator.clipboard.writeText(u);status('Link copied. It opens straight to this kid; your family passcode is still needed to make changes.');setTimeout(()=>status(''),4000)}catch(x){showLink(u,'Your personal link')}});
 try{(ONGAS?f=>google.script.url.getLocation(f):f=>f({parameter:Object.fromEntries(new URLSearchParams(location.search))}))(l=>{const k=l&&l.parameter&&l.parameter.kid;if(k){cur=k;ls.set('cc-kid',k);loadedFor=null;if(kids.length){if(kids.some(x=>x.id===k)){loadPrefs(k);fillSelects();render()}}}})}catch(e){}
 document.addEventListener('submit',async e=>{if(e.target.id!=='unlockForm')return;e.preventDefault();const pin=$('#unlockPin').value.trim();if(pin.length<4){status('Family passcode needs at least 4 characters.');return}busy++;status('Checking…');try{const d=await call('unlockKid',cur,pin);KEYS[cur]=pin;saveKeys();apply(d);status('Unlocked. You can make changes on this device now.');setTimeout(()=>status(''),3000)}catch(x){status(/family/i.test(String(x&&x.message))?'That passcode didn\'t match.':'Couldn\'t check right now. Try again.')}finally{busy--}});
+document.addEventListener('click',e=>{if(!e.target.closest('#switchFam'))return;ls.set('cc-fam','');ls.set('cc-kid','');location.reload()});
 $('#reqOpen').addEventListener('click',()=>{$('#reqName').value=ls.get('cc-name')||'';renderReqs();const d=$('#reqDlg');d.showModal?d.showModal():d.setAttribute('open','')});
 $('#reqCancel').addEventListener('click',()=>$('#reqDlg').close());
 $('#reqManual').addEventListener('click',()=>{$('#reqDlg').close();$('#t-find').click();openForm(null);$('#campForm').scrollIntoView?.({behavior:'smooth'})});
@@ -570,8 +576,9 @@ $('#noteName').addEventListener('change',()=>ls.set('cc-name',$('#noteName').val
 $('#noteForm').addEventListener('submit',async e=>{e.preventDefault();const text=$('#noteText').value.trim();if(!text)return;const who=$('#noteName').value.trim();ls.set('cc-name',who);await write('addNote',who,text);$('#noteText').value=''});
 $('#notes').addEventListener('click',e=>{const b=e.target.closest('[data-delnote]');if(b)write('deleteNote',b.dataset.delnote)});
 
-$('#lockForm').addEventListener('submit',async e=>{e.preventDefault();const v=$('#lockCode').value.trim();if(!v)return;CODE=v;$('#lockGo').disabled=true;$('#lockMsg').textContent='Checking…';try{apply(await call('getData'));ls.set('cc-crew',CODE);$('#lock').hidden=true;status('')}catch(x){CODE='';$('#lockMsg').textContent=isLocked(x)?'That code didn\'t work. Check with your group.':'Can\'t reach the board right now. Try again in a minute.'}finally{$('#lockGo').disabled=false}});
-render();if(CODE){status('Loading the camps…');refresh()}else showLock();setInterval(refresh,30000);document.addEventListener('visibilitychange',refresh);
+document.querySelectorAll('input[name=famMode]').forEach(r=>r.addEventListener('change',()=>{const n=document.querySelector('input[name=famMode]:checked').value==='new';$('#famNameL').hidden=!n;$('#famName').required=n;$('#famHint').textContent=n?'Pick a passcode only your family knows. You\'ll use it on your phone and computer.':'Your family passcode keeps your kids\' picks yours. Use it on your phone and your computer.'}));
+$('#lockForm').addEventListener('submit',async e=>{e.preventDefault();const c=$('#lockCode').value.trim(),f=$('#famPin').value.trim(),isNew=document.querySelector('input[name=famMode]:checked').value==='new';if(!c||f.length<4){$('#lockMsg').textContent='Family passcode needs at least 4 characters.';return}$('#lockGo').disabled=true;$('#lockMsg').textContent='Checking…';try{let d;if(isNew){const n=$('#famName').value.trim();if(!n)throw new Error('Family name is required.');CODE={c};d=await call('createFamily',n,f)}CODE={c,f};if(!d)d=await call('getData');apply(d);ls.set('cc-crew',c);ls.set('cc-fam',f);$('#lock').hidden=true;status('')}catch(x){CODE=null;const m=String(x&&x.message||x);$('#lockMsg').textContent=/LOCKED/.test(m)?'That crew code didn\'t work. Check with your group.':/FAMILY/.test(m)?'We couldn\'t find that family passcode. New here? Choose "We\'re new here."':/taken|required|characters/.test(m)?m:'Can\'t reach the board right now. Try again in a minute.'}finally{$('#lockGo').disabled=false}});
+if(ls.get('cc-crew'))$('#lockCode').value=ls.get('cc-crew');render();if(CODE){status('Loading the camps…');refresh()}else showLock();setInterval(refresh,30000);document.addEventListener('visibilitychange',refresh);
 }
 </script>
 </body></html>
