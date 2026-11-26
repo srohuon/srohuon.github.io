@@ -356,7 +356,7 @@ const saveKeys=()=>ls.set('cc-keys',JSON.stringify(KEYS));
 const mine=k=>!!(k&&MINE.includes(k));
 const API='https://script.google.com/macros/s/AKfycbwyvhpXCTl23VpOf49vAY7Ue0lP6aiVTGGZYqQrPRHQUTWROTO4cjOlD-ReSQiJvSLX/exec';
 const ONGAS=!!(window.google&&google.script&&google.script.run);
-const call=(fn,...a)=>ONGAS?new Promise((res,rej)=>google.script.run.withSuccessHandler(res).withFailureHandler(rej)[fn](CODE,...a)):fetch(API,{method:'POST',credentials:'omit',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({fn,args:[CODE,...a]})}).then(r=>r.json()).then(j=>{if(!j.ok)throw new Error(j.error||'error');return j.data});
+const call=(fn,...a)=>ONGAS?new Promise((res,rej)=>google.script.run.withSuccessHandler(res).withFailureHandler(rej)[fn](CODE,...a)):fetch(API,{signal:(window.AbortSignal&&AbortSignal.timeout)?AbortSignal.timeout(45000):undefined,method:'POST',credentials:'omit',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({fn,args:[CODE,...a]})}).then(r=>r.json()).then(j=>{if(!j.ok)throw new Error(j.error||'error');return j.data});
 const isLocked=e=>/LOCKED|FAMILY/.test(String(e&&e.message||e));
 function showLock(msg){const L=$('#lock');L.hidden=false;$('#lockMsg').textContent=msg||'';status('');setTimeout(()=>$('#lockCode').focus(),50)}
 var acctDraft={col:{},x:{}},acctForce=false;const status=t=>{const b=$('#status');b.hidden=!t;b.textContent=t||''};
