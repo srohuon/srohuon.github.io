@@ -175,6 +175,7 @@ td.n,th.n{text-align:right;white-space:nowrap}
 .dlclose{display:none}
 @media(max-width:700px){.dlwrap[open]{position:fixed;inset:0;z-index:45;margin:0;border-radius:0;overflow-y:auto;-webkit-overflow-scrolling:touch;background:#fffdf7;padding:0 16px 40px}.dlwrap[open] .dlhead{position:sticky;top:0;z-index:2;background:#fffdf7;margin:0 -16px 10px;padding:14px 16px 10px;border-bottom:1px solid var(--line)}.dlwrap[open] .dlhead h2{font-size:22px}.dlwrap[open] .dlclose{display:inline-block;margin-left:auto;font-weight:700;font-size:14px;padding:6px 12px;border:1.5px solid var(--line);border-radius:999px;background:#fff}.dlwrap[open] .chev{display:none}.dlwrap[open] .legend{order:5;flex-basis:100%}.dlwrap:not([open]) .dlhead h2{font-size:20px}body.dlopen{overflow:hidden}}
 @media(max-width:700px){html:has(#v-find:not([hidden])){scroll-snap-type:y mandatory}header.band,.tabrow,#v-find .week{scroll-snap-align:start}#v-find .week{min-height:100vh;min-height:100dvh;scroll-snap-stop:always;display:flex;flex-direction:column;justify-content:flex-start;padding-top:14px}#v-find .week .rail{flex:1}}
+@media(max-width:700px){.dlwrap:not([open]){padding:10px 14px;margin-top:14px;border-radius:14px}.dlwrap:not([open]) .dlhead{flex-wrap:nowrap;gap:8px;align-items:center}.dlwrap:not([open]) .dlhead h2{font-size:16px;white-space:nowrap}.dlwrap:not([open]) .dlx{display:none}.dlwrap:not([open]) .dltitle{gap:6px;flex:none}.dlwrap:not([open]) .dlnext{flex:1 1 auto;min-width:0;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.dlwrap[open] .legend{display:none}.dlwrap[open] .dlhead{padding:10px 16px 8px;margin-bottom:4px}.dlwrap[open] .dlhead h2{font-size:19px}.dlrow summary{padding-top:7px!important;padding-bottom:7px!important}}
 </style></head><body>
 <div id="lock" class="lock" hidden><form id="lockForm" class="lockcard"><h1 class="lockh">Camp Crew · Summer 2027</h1><p>This board is private to our group. Enter the crew code you were sent.</p><label>Crew code<input id="lockCode" autocomplete="off" autocapitalize="none" spellcheck="false" maxlength="60" required></label>
 <fieldset class="famsel"><legend>Your family</legend><label class="dchk"><input type="radio" name="famMode" value="have" checked> I have our family passcode</label><label class="dchk"><input type="radio" name="famMode" value="new"> We're new here</label></fieldset>
@@ -194,7 +195,7 @@ td.n,th.n{text-align:right;white-space:nowrap}
   </form></dialog>
   
   <details class="dlwrap" id="dlbox" open><script>if(matchMedia("(max-width:700px)").matches)document.getElementById("dlbox").removeAttribute("open")</script>
-    <summary class="dlhead"><span class="dltitle"><span class="chev" aria-hidden="true"></span><h2>Key dates &amp; deadlines</h2></span><span class="dlnext" id="dlnext"></span><span class="dlclose" aria-hidden="true">Close ✕</span><span class="legend" id="legend"></span></summary>
+    <summary class="dlhead"><span class="dltitle"><span class="chev" aria-hidden="true"></span><h2>Key dates<span class="dlx"> &amp; deadlines</span></h2></span><span class="dlnext" id="dlnext"></span><span class="dlclose" aria-hidden="true">Close ✕</span><span class="legend" id="legend"></span></summary>
     <div id="deadlines"></div>
     <details class="rules"><summary>Refund, payment and form rules</summary><ul id="rules"></ul></details>
   </details>
@@ -384,7 +385,7 @@ function renderDeadlines(){
   const today=new Date();today.setHours(0,0,0,0);
   const up=deadlines.filter(d=>D(d.d)>=today).sort((a,b)=>String(a.d).localeCompare(String(b.d)));
   const used=[...new Set(up.map(provOf))];
-  $('#dlnext').textContent=up.length?`Next: ${fmtDay(up[0].d)} · ${up[0].t} (tap to open)`:'';
+  $('#dlnext').textContent=up.length?`Next: ${fmtDay(up[0].d)} · ${up[0].t}`:'';
   $('#legend').innerHTML=used.map(p=>`<span class="prov" style="--pc:${PROV[p].c}">${esc(PROV[p].n)}</span>`).join('');
   $('#deadlines').innerHTML=up.map((d,i)=>{const p=provOf(d),days=Math.round((D(d.d)-today)/864e5),ev=dlEvent(d);ICS.push(ev);
     const when=days===0?'today':days===1?'tomorrow':`in ${days} days`;
