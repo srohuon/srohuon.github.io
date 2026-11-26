@@ -172,6 +172,8 @@ td.n,th.n{text-align:right;white-space:nowrap}
 .wkkid{display:inline-block;font-size:12px;font-weight:800;color:#fff;background:var(--kc,#888);border-radius:999px;padding:1px 8px;margin-right:4px}.wkr .wkkid{margin-right:auto}
 .lklinks{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
 .lock{overflow-y:auto;-webkit-overflow-scrolling:touch;align-items:start}.lockcard{margin:24px auto}
+.dlclose{display:none}
+@media(max-width:700px){.dlwrap[open]{position:fixed;inset:0;z-index:45;margin:0;border-radius:0;overflow-y:auto;-webkit-overflow-scrolling:touch;background:#fffdf7;padding:0 16px 40px}.dlwrap[open] .dlhead{position:sticky;top:0;z-index:2;background:#fffdf7;margin:0 -16px 10px;padding:14px 16px 10px;border-bottom:1px solid var(--line)}.dlwrap[open] .dlhead h2{font-size:22px}.dlwrap[open] .dlclose{display:inline-block;margin-left:auto;font-weight:700;font-size:14px;padding:6px 12px;border:1.5px solid var(--line);border-radius:999px;background:#fff}.dlwrap[open] .chev{display:none}.dlwrap[open] .legend{order:5;flex-basis:100%}.dlwrap:not([open]) .dlhead h2{font-size:20px}body.dlopen{overflow:hidden}}
 </style></head><body>
 <div id="lock" class="lock" hidden><form id="lockForm" class="lockcard"><h1 class="lockh">Camp Crew · Summer 2027</h1><p>This board is private to our group. Enter the crew code you were sent.</p><label>Crew code<input id="lockCode" autocomplete="off" autocapitalize="none" spellcheck="false" maxlength="60" required></label>
 <fieldset class="famsel"><legend>Your family</legend><label class="dchk"><input type="radio" name="famMode" value="have" checked> I have our family passcode</label><label class="dchk"><input type="radio" name="famMode" value="new"> We're new here</label></fieldset>
@@ -190,8 +192,8 @@ td.n,th.n{text-align:right;white-space:nowrap}
     <div id="reqList"></div>
   </form></dialog>
   
-  <details class="dlwrap" id="dlbox" open>
-    <summary class="dlhead"><span class="dltitle"><span class="chev" aria-hidden="true"></span><h2>Key dates &amp; deadlines</h2></span><span class="dlnext" id="dlnext"></span><span class="legend" id="legend"></span></summary>
+  <details class="dlwrap" id="dlbox" open><script>if(matchMedia("(max-width:700px)").matches)document.getElementById("dlbox").removeAttribute("open")</script>
+    <summary class="dlhead"><span class="dltitle"><span class="chev" aria-hidden="true"></span><h2>Key dates &amp; deadlines</h2></span><span class="dlnext" id="dlnext"></span><span class="dlclose" aria-hidden="true">Close ✕</span><span class="legend" id="legend"></span></summary>
     <div id="deadlines"></div>
     <details class="rules"><summary>Refund, payment and form rules</summary><ul id="rules"></ul></details>
   </details>
@@ -601,6 +603,7 @@ function openNeeds(edit){editingNeeds=edit;const f=$('#kidForm');f.hidden=false;
 document.addEventListener('click',e=>{if(e.target.closest('#editNeeds'))openNeeds(true)});
 $('#crewOpen').addEventListener('click',()=>{const b=$('#crewBox');b.hidden=!b.hidden;$('#forgotBox').hidden=true;if(!b.hidden)$('#ncSetup').focus()});
 $('#ncGo').addEventListener('click',async()=>{const v=id=>$(id).value.trim();const m=$('#ncMsg');const cc=v('#ncCode'),pin=v('#ncPin');if(!v('#ncSetup')||!v('#ncName')||cc.length<6||!v('#ncFam')||pin.length<4){m.textContent='Fill in every box (crew code 6+ characters, passcode 4+).';return}$('#ncGo').disabled=true;m.textContent='Creating…';const keep=CODE;try{CODE={};const d=await call('createCrew',v('#ncSetup'),v('#ncName'),cc,v('#ncFam'),pin);CODE={c:cc,f:pin};ls.set('cc-crew',cc);ls.set('cc-fam',pin);ls.set('cc-kid','');cur=null;apply(d);$('#lock').hidden=true;status('Your crew is ready. Add your kids from the family menu, then send your group the link and your crew code.');setTimeout(()=>status(''),8000)}catch(x){CODE=keep;m.textContent=String(x&&x.message||x)}finally{$('#ncGo').disabled=false}});
+$('#dlbox').addEventListener('toggle',e=>{const o=e.target.open&&matchMedia('(max-width:700px)').matches;document.body.classList.toggle('dlopen',o);if(o)e.target.scrollTop=0});
 $('#forgotOpen').addEventListener('click',()=>{const b=$('#forgotBox');b.hidden=!b.hidden;$('#crewBox').hidden=true;if(!b.hidden)$('#fgName').focus()});
 $('#fgSend').addEventListener('click',async()=>{const c=$('#lockCode').value.trim(),n=$('#fgName').value.trim(),p=$('#fgPin').value.trim();const m=$('#fgMsg');if(!c){m.textContent='Enter the crew code above first.';return}if(!n||p.length<4){m.textContent='Add your family name and a new passcode (4+ characters).';return}$('#fgSend').disabled=true;m.textContent='Sending…';const keep=CODE;try{CODE={c};await call('requestReset',n,p,$('#fgNote').value.trim());m.textContent='Sent. Once the organizer approves it, choose "I have our family passcode" and sign in with your new one.';$('#fgPin').value=''}catch(x){const t=String(x&&x.message||x);m.textContent=/LOCKED/.test(t)?'That crew code didn\'t work.':t}finally{CODE=keep;$('#fgSend').disabled=false}});
 $('#chPinOpen').addEventListener('click',()=>{$('#chPinBox').hidden=!$('#chPinBox').hidden;$('#chPinMsg').textContent='';if(!$('#chPinBox').hidden)$('#chPin').focus()});
