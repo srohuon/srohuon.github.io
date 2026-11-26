@@ -399,7 +399,9 @@ function filtered(){
     if(q){const hay=[c.name,c.provider,c.category,c.theme,c.location,c.id,c.notes,c.ages,fmtDay(c.wk)].join(' ');const hf=fold(hay);if(!q.split(/\s+/).every(w=>hf.includes(w)))return false}
     return true});
   const by={week:(a,b)=>String(a.wk).localeCompare(String(b.wk))||String(a.name).localeCompare(b.name),cost:(a,b)=>(a.cost||9999)-(b.cost||9999),drive:(a,b)=>(a.drive||99)-(b.drive||99),name:(a,b)=>String(a.name).localeCompare(b.name),new:(a,b)=>String(b.addedAt).localeCompare(String(a.addedAt)),fit:(a,b)=>fitIssues(a,kprof).length-fitIssues(b,kprof).length||String(a.wk).localeCompare(String(b.wk)),sib:(a,b)=>(sibMatch(b).length?1:0)-(sibMatch(a).length?1:0)||fitIssues(a,kprof).length-fitIssues(b,kprof).length||String(a.wk).localeCompare(String(b.wk))};
-  return list.sort(by[flt.sort]);
+  list.sort(by[flt.sort]);
+  if(cur){const R={registered:0,interested:1,favorite:2,waitlist:3,backup:4};const rk=c=>{const p=pickFor(cur,c.id);return p&&p.status in R?R[p.status]:9};list.sort((a,b)=>rk(a)-rk(b))}
+  return list;
 }
 function renderFind(){queueSave();
   const list=filtered(),shown=list.slice(0,limit);
