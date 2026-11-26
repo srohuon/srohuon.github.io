@@ -106,7 +106,7 @@ body{background:radial-gradient(900px 500px at 0% 30%,rgba(255,200,61,.10),trans
 .reqbtn{background:var(--rb);color:#1f2333;box-shadow:0 3px 0 rgba(31,35,51,.18)}
 .who-h{background:linear-gradient(90deg,#e8173f,#f06a00,#1f9d4c,#1b7fe0,#7a3ff2);-webkit-background-clip:text;background-clip:text;color:transparent}
 .cmpbar{background:linear-gradient(90deg,#7a3ff2,#1b7fe0)}
-.b.fit{background:#dff3e4;color:#1d5b33}.daysel{border:0;padding:0;margin:0;grid-column:1/-1}.daysel legend{font-weight:700;font-size:14px;margin-bottom:4px}.dchk{display:inline-flex;align-items:center;gap:4px;margin-right:12px;font-weight:600}.dchk input{width:18px;height:18px;min-height:0}
+.b.sib{background:#efe7ff;color:#4b2bb5}.b.fit{background:#dff3e4;color:#1d5b33}.daysel{border:0;padding:0;margin:0;grid-column:1/-1}.daysel legend{font-weight:700;font-size:14px;margin-bottom:4px}.dchk{display:inline-flex;align-items:center;gap:4px;margin-right:12px;font-weight:600}.dchk input{width:18px;height:18px;min-height:0}
 *{scrollbar-color:rgba(29,43,47,.28) transparent}::-webkit-scrollbar-track,::-webkit-scrollbar-corner{background:transparent}::-webkit-scrollbar{height:8px;width:8px;background:transparent}::-webkit-scrollbar-thumb{background:rgba(29,43,47,.28);border-radius:8px}
 .toprow{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap}.reqbtn{background:var(--sun,#f5c542);color:#1d2b2f;border:0;border-radius:999px;padding:10px 18px;font-weight:800;white-space:nowrap}
 .reqdlg{max-width:560px;width:calc(100% - 28px);border:0;border-radius:18px;padding:20px;color:var(--ink)}.reqdlg::backdrop{background:rgba(0,0,0,.45)}.reqdlg label{display:block;margin-top:8px}.reqdlg textarea{width:100%;box-sizing:border-box}
@@ -205,9 +205,9 @@ td.n,th.n{text-align:right;white-space:nowrap}
       <label>Week<select id="fWeek"><option value="">All weeks</option></select></label>
       <label>Subject<select id="fCat"><option value="">All subjects</option></select></label>
       <label>Provider<select id="fProv"><option value="">All providers</option></select></label>
-      <label>Show<select id="fShow"><option value="">All camps</option><option value="new">New since last check</option><option value="mine">My kid's list</option><option value="picked">Has kids on it</option><option value="short">Standard day only</option><option value="fits">Fits my kid's needs</option></select></label>
+      <label>Show<select id="fShow"><option value="">All camps</option><option value="new">New since last check</option><option value="mine">My kid's list</option><option value="picked">Has kids on it</option><option value="short">Standard day only</option><option value="fits">Fits my kid's needs</option><option value="sib">Same place as my other kids</option></select></label>
       <label>Drive (est.)<select id="fDrive"><option value="20">20 min or less</option><option value="15">15 min or less</option><option value="10">10 min or less</option><option value="999">Any distance</option></select></label>
-      <label>Sort<select id="fSort"><option value="week">By week</option><option value="cost">Price, low to high</option><option value="drive">Closest first</option><option value="name">Name A–Z</option><option value="new">Newest added</option><option value="fit">Best fit for my kid</option></select></label>
+      <label>Sort<select id="fSort"><option value="week">By week</option><option value="cost">Price, low to high</option><option value="drive">Closest first</option><option value="name">Name A–Z</option><option value="new">Newest added</option><option value="fit">Best fit for my kid</option><option value="sib">Same place as my other kids first</option></select></label>
     </div>
     <div class="chips info">
       <span class="note" id="count"></span>
@@ -378,7 +378,7 @@ function card(c){
   const pk=campProv(c);
   return `<article class="card pv ${/^2027/.test(c.week)?'conf':'pred'}${tog?' together':''}${p?' mine':''}" style="--pc:${PROV[pk].c}">
     <div class="cprov">${provChip(pk,pk==='other'?c.provider:'')}</div>
-    <div class="badges">${/^2027/.test(c.week)?'<span class="b conf">2027 dates confirmed</span>':''}${isNew(c)?'<span class="b new">New</span>':''}${tog?`<span class="b tog">${on.length} kids together</span>`:''}${c.drive>20?'<span class="b far">Over 20 min</span>':''}${(i=>i.length?`<span class="b far">${esc(i.join(' · '))}</span>`:(kprof&&ck?'<span class="b fit">Fits '+esc(ck.name)+'</span>':''))(fitIssues(c,kprof))}</div>
+    <div class="badges">${/^2027/.test(c.week)?'<span class="b conf">2027 dates confirmed</span>':''}${isNew(c)?'<span class="b new">New</span>':''}${tog?`<span class="b tog">${on.length} kids together</span>`:''}${c.drive>20?'<span class="b far">Over 20 min</span>':''}${sibMatch(c).map(m=>`<span class="b sib">${m.same?esc(m.name)+' picked this too':'Same place &amp; week as '+esc(m.name)+(m.hours?' · same hours':'')}</span>`).join('')}${(i=>i.length?`<span class="b far">${esc(i.join(' · '))}</span>`:(kprof&&ck?'<span class="b fit">Fits '+esc(ck.name)+'</span>':''))(fitIssues(c,kprof))}</div>
     <h4>${esc(c.name)}</h4>
     <div class="meta"><span class="nw">${esc(c.hours)} · ${esc(c.days)}</span><span class="nw">${money(c.cost)}</span><span class="nw">${/^Grade/.test(c.ages)?'':'Ages '}${esc(c.ages)}</span></div>
     <div class="meta"><span>${esc(c.location)}${c.drive?` · ~${esc(c.drive)} min`:''}</span><span class="nw">${esc(subj(c))}${pk==='other'||pk==='rp'?' · '+esc(c.provider):''}</span></div>
@@ -395,10 +395,10 @@ function filtered(){
     if(flt.week&&c.wk!==flt.week)return false;
     if(flt.prov&&(flt.prov.startsWith('pv:')?campProv(c)!==flt.prov.slice(3):c.provider!==flt.prov))return false;if(flt.cat&&(flt.cat.startsWith('theme:')?c.theme!==flt.cat.slice(6):subj(c)!==flt.cat))return false;
     if(c.drive!==''&&c.drive!=null&&+c.drive>flt.drive)return false;
-    for(const x of ch){if(x.startsWith('theme:')&&c.theme!==x.slice(6))return false;if(x==='new'&&!isNew(c))return false;if(x==='picked'&&!kidsOn(c.id).length)return false;if(x==='mine'&&!(cur&&pickFor(cur,c.id)&&STATUS[pickFor(cur,c.id).status]))return false;if(x==='short'&&ext(c))return false;if(x==='fits'&&fitIssues(c,kprof).length)return false}
+    for(const x of ch){if(x.startsWith('theme:')&&c.theme!==x.slice(6))return false;if(x==='new'&&!isNew(c))return false;if(x==='picked'&&!kidsOn(c.id).length)return false;if(x==='mine'&&!(cur&&pickFor(cur,c.id)&&STATUS[pickFor(cur,c.id).status]))return false;if(x==='short'&&ext(c))return false;if(x==='fits'&&fitIssues(c,kprof).length)return false;if(x==='sib'&&!sibMatch(c).length)return false}
     if(q){const hay=[c.name,c.provider,c.category,c.theme,c.location,c.id,c.notes,c.ages,fmtDay(c.wk)].join(' ');const hf=fold(hay);if(!q.split(/\s+/).every(w=>hf.includes(w)))return false}
     return true});
-  const by={week:(a,b)=>String(a.wk).localeCompare(String(b.wk))||String(a.name).localeCompare(b.name),cost:(a,b)=>(a.cost||9999)-(b.cost||9999),drive:(a,b)=>(a.drive||99)-(b.drive||99),name:(a,b)=>String(a.name).localeCompare(b.name),new:(a,b)=>String(b.addedAt).localeCompare(String(a.addedAt)),fit:(a,b)=>fitIssues(a,kprof).length-fitIssues(b,kprof).length||String(a.wk).localeCompare(String(b.wk))};
+  const by={week:(a,b)=>String(a.wk).localeCompare(String(b.wk))||String(a.name).localeCompare(b.name),cost:(a,b)=>(a.cost||9999)-(b.cost||9999),drive:(a,b)=>(a.drive||99)-(b.drive||99),name:(a,b)=>String(a.name).localeCompare(b.name),new:(a,b)=>String(b.addedAt).localeCompare(String(a.addedAt)),fit:(a,b)=>fitIssues(a,kprof).length-fitIssues(b,kprof).length||String(a.wk).localeCompare(String(b.wk)),sib:(a,b)=>(sibMatch(b).length?1:0)-(sibMatch(a).length?1:0)||fitIssues(a,kprof).length-fitIssues(b,kprof).length||String(a.wk).localeCompare(String(b.wk))};
   return list.sort(by[flt.sort]);
 }
 function renderFind(){queueSave();
@@ -408,7 +408,7 @@ function renderFind(){queueSave();
   if(!list.length){$('#results').innerHTML='<p class="note">Nothing matches. Try clearing a filter or widening the drive time.</p>';return}
   if(flt.sort==='week'){
     const g={};for(const c of shown)(g[c.wk||'']??=[]).push(c);
-    $('#results').innerHTML=Object.keys(g).map(w=>{const n=g[w].length;return `<div class="week"><div class="wkhead"><h3>${w?'Week of '+esc(fmtDay(w,{month:'long',day:'numeric'})):'Any week'} <small>${n} camp${n===1?'':'s'}${n>4?' · scroll for more':''}</small></h3>${n>4?'<span class="arrows"><button type="button" class="ghost small" data-scroll="-1" aria-label="Scroll left">‹</button><button type="button" class="ghost small" data-scroll="1" aria-label="Scroll right">›</button></span>':''}</div><div class="rail" style="--rows:${n>2?2:1}">${g[w].map(card).join('')}</div></div>`}).join('');
+    $('#results').innerHTML=Object.keys(g).map(w=>{const n=g[w].length;return `<div class="week"><div class="wkhead"><h3>${w?'Week of '+esc(fmtDay(w,{month:'long',day:'numeric'})):'Any week'} <small>${n} camp${n===1?'':'s'}${n>3?' · scroll for more':''}</small></h3>${n>3?'<span class="arrows"><button type="button" class="ghost small" data-scroll="-1" aria-label="Scroll left">‹</button><button type="button" class="ghost small" data-scroll="1" aria-label="Scroll right">›</button></span>':''}</div><div class="rail" style="--rows:1">${g[w].map(card).join('')}</div></div>`}).join('');
   } else $('#results').innerHTML=`<div class="cards" style="margin-top:12px">${shown.map(card).join('')}</div>`;
 }
 function renderCrew(){
@@ -478,6 +478,7 @@ const ageOf=c=>{const s=String(c.ages);const g=s.match(/Grades?\s*(K|\d+)\s*[–
 const fmtH=h=>{const hh=Math.floor(h),mm=Math.round((h-hh)*60);return (hh%12||12)+(mm?':'+String(mm).padStart(2,'0'):'')+(hh<12?'am':'pm')};
 let kprof=null,hid=[],showHid=false;
 const DEFPROF={age:7,from:9,to:14,days:['M','Tu','W','Th','F']};
+function sibMatch(c){if(!cur)return [];const out=[];for(const p of picks){if(!STATUS[p.status]||p.kid===cur||!MINE.includes(p.kid))continue;const pc=camps.find(x=>x.id===String(p.camp));if(!pc||pc.wk!==c.wk||pc.location!==c.location)continue;const k=kids.find(x=>x.id===p.kid);if(!k)continue;out.push({name:k.name,same:pc.id===c.id,hours:pc.hours===c.hours})}return out}
 function fitIssues(c,p){if(!p)return [];const out=[];const a=ageOf(c);if(a&&(p.age<a[0]||p.age>a[1]))out.push(`ages ${a[0]}–${a[1]}`);const [st,en]=hrsOf(c);if(st!=null&&st>p.from)out.push(`starts ${fmtH(st)}`);if(en!=null&&en<p.to)out.push(`ends ${fmtH(en)}`);const d=parseDays(c.days);const miss=p.days.filter(x=>!d.has(x));if(d.size&&miss.length)out.push(`no ${miss.map(x=>({M:'Mon',Tu:'Tue',W:'Wed',Th:'Thu',F:'Fri'})[x]).join(', ')}`);return out}
 let prefs={},loadedFor=null,lastSaved='',saveT=null;
 let EXEC='';
