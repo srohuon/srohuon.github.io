@@ -158,6 +158,7 @@ td.n,th.n{text-align:right;white-space:nowrap}
 [hidden]{display:none!important}
 @media(max-width:700px){.filters>label{flex:0 0 150px}.filters>label.wide{flex:0 0 210px}.filters .wide{grid-column:1/-1}table{font-size:13px}}
 @media print{header,.kidbar,.tabs,#status,.noprint,section:not(#v-guide),#kidForm,h2.who-h{display:none!important}body{background:#fff}.band{padding:0}.guide{border:0;padding:0}a{text-decoration:none}}
+.confchk{display:inline-flex;align-items:center;gap:6px;cursor:pointer;font-size:inherit;color:inherit;white-space:nowrap}.confchk input{width:18px;height:18px;margin:0;accent-color:#2d5560}
 </style></head><body>
 <div id="lock" class="lock" hidden><form id="lockForm" class="lockcard"><h1 class="lockh">Camp Crew · Summer 2027</h1><p>This board is private to our group. Enter the crew code you were sent.</p><label>Crew code<input id="lockCode" autocomplete="off" autocapitalize="none" spellcheck="false" maxlength="60" required></label>
 <fieldset class="famsel"><legend>Your family</legend><label class="dchk"><input type="radio" name="famMode" value="have" checked> I have our family passcode</label><label class="dchk"><input type="radio" name="famMode" value="new"> We're new here</label></fieldset>
@@ -222,6 +223,7 @@ td.n,th.n{text-align:right;white-space:nowrap}
     <div class="chips info">
       <span class="note" id="count"></span>
       <span class="key"><span><i class="ks"></i>Confirmed 2027</span><span><i class="kd"></i>Predicted from 2026</span></span>
+      <label class="confchk"><input type="checkbox" id="confOnly"> Show confirmed only</label>
       <details class="about"><summary>About these dates</summary><div>Most dates and prices come from the summer 2026 guides and are shown on the matching 2027 week. Sessions marked <b>2027 dates confirmed</b> are already published and have a solid outline. Dashed outlines are predictions based on 2026. When the 2027 guides come out in January, new sessions get a yellow <b>New</b> badge. Drive times are rough estimates from each kid's home ZIP code (Clarksville if none is set).</div></details>
     </div>
     <div id="results"></div>
@@ -416,7 +418,7 @@ function filtered(){
 }
 function renderFind(){queueSave();
   const list=filtered(),shown=list.slice(0,limit);
-  $('#count').innerHTML=`${showHid?'Hidden: ':''}${list.length} session${list.length===1?'':'s'}`+` <label class="note" style="display:inline-flex;align-items:center;gap:4px;margin-left:8px;cursor:pointer"><input type="checkbox" id="confOnly"${flt.conf?' checked':''}> Confirmed 2027 only</label>`+(hid.length?` <button type="button" class="ghost small" id="togHid">${showHid?'Back to all camps':'Show '+hid.length+' hidden'}</button>`:'');
+  $('#count').innerHTML=`${showHid?'Hidden: ':''}${list.length} session${list.length===1?'':'s'}`+(hid.length?` <button type="button" class="ghost small" id="togHid">${showHid?'Back to all camps':'Show '+hid.length+' hidden'}</button>`:'');
   $('#more').hidden=list.length<=limit;
   if(!list.length){$('#results').innerHTML='<p class="note">Nothing matches. Try clearing a filter or widening the drive time.</p>';return}
   if(flt.sort==='camp'){
@@ -522,7 +524,7 @@ let prefs={},loadedFor=null,lastSaved='',saveT=null;
 let EXEC='';
 function prefState(){return JSON.stringify({k:kprof,h:hid,g:gchk,f:{q:flt.q,week:flt.week,cat:flt.cat,prov:flt.prov,drive:flt.drive,sort:flt.sort,conf:!!flt.conf,show:[...flt.chips][0]||''},cmp})}
 function loadPrefs(k){loadedFor=k;kprof=null;hid=[];gchk={};const raw=prefs[k];if(!raw)return;try{const p=JSON.parse(raw);kprof=p.k||null;hid=Array.isArray(p.h)?p.h:[];gchk=p.g&&typeof p.g==='object'?p.g:{};const f=p.f||{};Object.assign(flt,{q:f.q||'',week:f.week||'',cat:f.cat||'',prov:f.prov||'',drive:f.drive||20,sort:f.sort||'week',conf:!!f.conf,chips:new Set(f.show?[f.show]:[])});cmp=Array.isArray(p.cmp)?p.cmp:[];saveCmp();lastSaved=raw;
-  $('#q').value=flt.q;$('#fDrive').value=String(flt.drive);$('#fSort').value=flt.sort;$('#fShow').value=f.show||''}catch(e){}}
+  $('#q').value=flt.q;$('#fDrive').value=String(flt.drive);$('#fSort').value=flt.sort;$('#fShow').value=f.show||'';$('#confOnly').checked=!!flt.conf}catch(e){}}
 function queueSave(){if(!cur||loadedFor!==cur||!mine(cur))return;clearTimeout(saveT);saveT=setTimeout(async()=>{const st=prefState();if(st===lastSaved)return;try{await call('savePrefs',cur,st,KEYS[cur]);lastSaved=st;prefs[cur]=st;const n=$('#savedNote');if(n){n.textContent='Saved ✓';setTimeout(()=>{n.textContent='Saves automatically'},2000)}}catch(e){}},1200)}
 function apply(d){
   if(!d)return;
