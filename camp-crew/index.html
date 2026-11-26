@@ -195,6 +195,8 @@ td.n,th.n{text-align:right;white-space:nowrap}
 .kswatch{display:flex;gap:5px;flex-basis:100%;order:3;padding:2px 0 4px 16px}.kswatch .sw{width:22px;height:22px;min-height:0;padding:0;border-radius:50%;background:var(--sw);border:2px solid #fff;box-shadow:0 0 0 1.5px var(--line);cursor:pointer}.kswatch .sw.on{box-shadow:0 0 0 2.5px var(--ink)}.acctk>span:last-child{order:4}
 .pksel.none{color:var(--muted)}.pksel.registered{background:#dff3e4;border-color:#8fd0a2}.pksel.interested{background:#efe7ff;border-color:#b9a3f5}.pksel.favorite{background:#ffe8f1;border-color:#f3a6c6}.pksel.waitlist,.pksel.backup{background:#fff5d6;border-color:#f0d27a}
 @media(max-width:700px){.card .pksel{width:auto!important;max-width:100%;min-height:0;height:34px;padding:4px 30px 4px 12px;font-size:14px;font-weight:700;border-radius:999px;align-self:flex-start}.card .who:empty{display:none}}
+.crewwrap{max-height:calc(100vh - 140px);overflow:auto}#crew{border-collapse:separate;border-spacing:0}#crew thead th{position:sticky;top:0;z-index:2;background:#fffdf7;box-shadow:0 1px 0 var(--line)}#crew td:first-child,#crew th:first-child{position:sticky;left:0;z-index:1;background:#fffdf7;box-shadow:1px 0 0 var(--line)}#crew thead th:first-child{z-index:3}
+@media(max-width:700px){.crewwrap{max-height:none;overflow:visible}#crew thead th{top:54px}}
 </style></head><body>
 <div id="lock" class="lock" hidden><form id="lockForm" class="lockcard"><h1 class="lockh">Camp Crew · Summer 2027</h1><p>This board is private to our group. Enter the crew code you were sent.</p><label>Crew code<input id="lockCode" autocomplete="off" autocapitalize="none" spellcheck="false" maxlength="60" required></label>
 <fieldset class="famsel"><legend>Your family</legend><label class="dchk"><input type="radio" name="famMode" value="have" checked> I have our family passcode</label><label class="dchk"><input type="radio" name="famMode" value="new"> We're new here</label></fieldset>
@@ -289,7 +291,7 @@ td.n,th.n{text-align:right;white-space:nowrap}
 
   <section id="v-crew" hidden>
     <p class="note" style="margin-top:14px">Every week where at least one kid has a pick. Bold names share a camp with someone else that week.</p>
-    <div class="scroll"><table class="crew" id="crew"></table></div>
+    <div class="scroll crewwrap"><table class="crew" id="crew"></table></div>
   </section>
 
   <section id="v-guide" hidden>
