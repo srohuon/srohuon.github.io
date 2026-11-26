@@ -57,7 +57,7 @@ summary.dlhead::-webkit-details-marker{display:none}
 .dlact a{font-size:14px;font-weight:700;text-decoration:none;border:1.5px solid #0f4c5c;color:#0f4c5c;border-radius:10px;padding:7px 12px;text-align:center}
 .dlact a.primary{background:#0f4c5c;color:#fff}
 .est2{font-size:12px;color:#5c6b6e;font-style:italic}
-@media(max-width:700px){.dlrow summary{grid-template-columns:1fr auto;gap:4px 8px}.dlday{grid-row:1;grid-column:1}.dlwhen{grid-row:1;grid-column:2}.dlrow summary .prov{grid-row:2;grid-column:1/-1;justify-self:start}.dlt{grid-row:3;grid-column:1/-1;white-space:normal}.dlbody{padding-left:6px}.dlact a{flex:1 1 140px}}
+@media(max-width:700px){.dlrow summary{display:flex;align-items:center;gap:8px;padding-top:9px;padding-bottom:9px}.dlday{flex:none;font-size:14px;font-family:inherit;font-weight:700}.dlrow summary .prov{width:10px;height:10px;padding:0;border-radius:50%;font-size:0;flex:none;overflow:hidden}.dlt{flex:1;min-width:0;font-size:14px;white-space:nowrap}.dlwhen{flex:none;font-size:12px}.dlrow:not(.next) .dlwhen{font-size:0}.dlrow:not(.next) .dlwhen::after{margin-left:0}.dlrow[open] summary{flex-wrap:wrap}.dlrow[open] .dlt{flex-basis:100%;order:5;white-space:normal}.dlrow[open] .dlwhen{order:3;margin-left:auto}.dlrow[open] summary .prov{width:auto;height:auto;padding:3px 10px;border-radius:999px;font-size:12px;order:4}.dlbody{padding-left:6px}.dlact a{flex:1 1 140px}}
 details.rules{margin-top:12px;font-size:14px;color:#18272b}
 details.rules summary{cursor:pointer;font-weight:700}
 .kidbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
