@@ -180,6 +180,7 @@ td.n,th.n{text-align:right;white-space:nowrap}
 @media(max-width:700px){body.viewopen{overflow:hidden}body.viewopen section[id^="v-"]:not([hidden]){position:fixed;inset:0;z-index:44;overflow-y:auto;-webkit-overflow-scrolling:touch;background:#fffdf7;padding:0 16px 40px;margin:0}body.viewopen #v-find:not([hidden]){scroll-snap-type:y mandatory}body:not(.viewopen) section[id^="v-"]{display:none}.vbar{display:flex;align-items:center;gap:8px;position:sticky;top:0;z-index:3;background:#fffdf7;margin:0 -16px 8px;padding:10px 16px;border-bottom:1px solid var(--line);min-height:54px;box-sizing:border-box}.vbar b{font:700 19px Fredoka,sans-serif;white-space:nowrap}.vkids{display:flex;gap:6px;overflow-x:auto;flex:1;min-width:0}.vkids .tag{padding:4px 10px;font-size:13px;min-height:0}.vclose{margin-left:auto;flex:none;font-weight:700;font-size:14px;padding:6px 12px;border:1.5px solid var(--line);border-radius:999px;background:#fff;color:var(--ink);min-height:0}.cmpbar{z-index:46}#status{z-index:47}}
 @media(max-width:700px){body:not(.viewopen) .tabs{display:grid;grid-template-columns:1fr 1fr;gap:8px;overflow:visible}body:not(.viewopen) .tabs::after{display:none}body:not(.viewopen) .tabs [role=tab]{border-radius:14px;padding:14px 10px;font-size:16px;background:#fff;color:var(--ink);border:1.5px solid var(--line);box-shadow:0 2px 8px rgba(31,35,51,.06)}}
 .acctk{flex-wrap:wrap}.acctx{display:inline-flex;align-items:center;gap:4px;font-size:12px;margin-left:auto;margin-right:6px;white-space:nowrap}.acctx input{width:16px;height:16px;min-height:0;margin:0}
+@media(max-width:700px){body.viewopen #v-find .fwrap{display:none}body.viewopen #v-find.fopen .fwrap{display:block;position:fixed;top:54px;left:0;right:0;z-index:6;background:#fffdf7;padding:12px 16px 14px;max-height:75vh;overflow-y:auto;box-shadow:0 12px 24px rgba(31,35,51,.18);border-bottom:1px solid var(--line)}body.viewopen #v-find.fopen .fwrap .filters{display:grid;grid-template-columns:1fr 1fr;gap:10px}body.viewopen #v-find.fopen .fwrap .filters .wide{grid-column:1/-1}.vfilt{flex:none;font-weight:700;font-size:14px;padding:6px 12px;border-radius:999px;border:1.5px solid var(--line);background:#fff;color:var(--ink);min-height:0}.vfilt[aria-expanded=true]{background:var(--ink);color:#fff}.fdone{display:none}body.viewopen #v-find.fopen .fdone{display:block;width:100%;margin-top:10px}.vbar .vkids{order:0}}
 </style></head><body>
 <div id="lock" class="lock" hidden><form id="lockForm" class="lockcard"><h1 class="lockh">Camp Crew · Summer 2027</h1><p>This board is private to our group. Enter the crew code you were sent.</p><label>Crew code<input id="lockCode" autocomplete="off" autocapitalize="none" spellcheck="false" maxlength="60" required></label>
 <fieldset class="famsel"><legend>Your family</legend><label class="dchk"><input type="radio" name="famMode" value="have" checked> I have our family passcode</label><label class="dchk"><input type="radio" name="famMode" value="new"> We're new here</label></fieldset>
@@ -230,7 +231,7 @@ td.n,th.n{text-align:right;white-space:nowrap}
   </div><div class="kidsw"><span class="note">Planning for</span><div class="kidbar" id="kids"></div><span class="note" id="savedNote"></span></div></div>
 
   <section id="v-find">
-    <div class="filters">
+    <div class="fwrap"><div class="filters">
       <label class="wide">Search<input id="q" type="search" placeholder="Camp name, subject, place, activity #…"></label>
       <label>Week<select id="fWeek"><option value="">All weeks</option></select></label>
       <label>Subject<select id="fCat"><option value="">All subjects</option></select></label>
@@ -246,7 +247,7 @@ td.n,th.n{text-align:right;white-space:nowrap}
       <label class="confchk"><input type="checkbox" id="confOnly"> Show confirmed only</label>
       <button type="button" class="ghost small" id="clrFlt" hidden>✕ Clear choices</button>
       <details class="about"><summary>About these dates</summary><div>Most dates and prices come from the summer 2026 guides and are shown on the matching 2027 week. Sessions marked <b>2027 dates confirmed</b> are already published and have a solid outline. Dashed outlines are predictions based on 2026. When the 2027 guides come out in January, new sessions get a yellow <b>New</b> badge. Drive times are rough estimates from each kid's home ZIP code.</div></details>
-    </div>
+    </div><button type="button" class="fdone vfilt">Done</button></div>
     <div id="results"></div>
     <div class="row" style="margin:16px 0"><button id="more" class="ghost" hidden>Show more</button></div>
     <form id="campForm" class="panel" hidden>
@@ -438,7 +439,7 @@ function filtered(){
   if(cur){const R={registered:0,interested:1,favorite:2,waitlist:3,backup:4};const pv=new Set(picks.filter(p=>p.kid===cur&&STATUS[p.status]).map(p=>(camps.find(c=>c.id===String(p.camp))||{}).provider).filter(Boolean));const rk=c=>{const p=pickFor(cur,c.id);return p&&p.status in R?R[p.status]:pv.has(c.provider)?5:9};list.sort((a,b)=>rk(a)-rk(b))}
   return list;
 }
-function renderFind(){queueSave();$('#clrFlt').hidden=!(flt.from||flt.q||flt.week||flt.cat||flt.prov||+flt.drive!==20||flt.conf||flt.chips.size);
+function renderFind(){queueSave();{const n=[flt.from,flt.q,flt.week,flt.cat,flt.prov,+flt.drive!==20,flt.conf,flt.chips.size,flt.sort!=='week'].filter(Boolean).length;$('#clrFlt').hidden=!(flt.from||flt.q||flt.week||flt.cat||flt.prov||+flt.drive!==20||flt.conf||flt.chips.size);const vn=document.querySelector('#v-find .vfn');if(vn)vn.textContent=n?' · '+n:''}
   const list=filtered(),shown=list.slice(0,limit);
   $('#count').innerHTML=`${showHid?'Showing hidden camps':''}`+(hid.length?` <button type="button" class="ghost small" id="togHid">${showHid?'Back to all camps':'Show '+hid.length+' hidden'}</button>`:'');
   $('#more').hidden=list.length<=limit;
@@ -589,8 +590,8 @@ document.addEventListener('click',e=>{
 
 const TABS=['find','crew','guide','notes'];
 const MOB=()=>matchMedia('(max-width:700px)').matches;
-for(const t of TABS){const sec=$('#v-'+t);const vb=document.createElement('div');vb.className='vbar';vb.innerHTML=`<b>${esc($('#t-'+t).textContent)}</b><span class="vkids"></span><button type="button" class="vclose">Close ✕</button>`;sec.prepend(vb)}
-document.addEventListener('click',e=>{if(e.target.closest('.vclose')){document.body.classList.remove('viewopen');return}const vk=e.target.closest('.vkids [data-vkid]');if(vk){const b=$('#kids [data-kid="'+vk.dataset.vkid+'"]');if(b&&b.getAttribute('aria-pressed')!=='true')b.click()}});
+for(const t of TABS){const sec=$('#v-'+t);const vb=document.createElement('div');vb.className='vbar';vb.innerHTML=`<b>${esc($('#t-'+t).textContent)}</b><span class="vkids"></span>${t==='find'?'<button type="button" class="vfilt" aria-expanded="false">Filters<span class="vfn"></span> ▾</button>':''}<button type="button" class="vclose">Close ✕</button>`;sec.prepend(vb)}
+document.addEventListener('click',e=>{const vf=e.target.closest('.vfilt');if(vf){const o=$('#v-find').classList.toggle('fopen');vf.setAttribute('aria-expanded',o);return}if($('#v-find').classList.contains('fopen')&&e.target.closest('#v-find')&&!e.target.closest('.fwrap')){$('#v-find').classList.remove('fopen');$('#v-find .vfilt').setAttribute('aria-expanded',false)}if(e.target.closest('.vclose')){document.body.classList.remove('viewopen');return}const vk=e.target.closest('.vkids [data-vkid]');if(vk){const b=$('#kids [data-kid="'+vk.dataset.vkid+'"]');if(b&&b.getAttribute('aria-pressed')!=='true')b.click()}});
 for(const t of TABS)$('#t-'+t).addEventListener('click',()=>{if(MOB()){document.body.classList.add('viewopen');setTimeout(()=>{$('#v-'+t).scrollTop=0},0)}for(const u of TABS){$('#t-'+u).setAttribute('aria-selected',u===t);$('#v-'+u).hidden=u!==t}if(t==='guide'&&!$('#gKid').value&&cur){$('#gKid').value=cur;renderGuide()}});
 let qT;$('#q').addEventListener('input',e=>{clearTimeout(qT);qT=setTimeout(()=>{flt.q=e.target.value;limit=120;renderFind()},150)});
 $('#fWeek').addEventListener('change',e=>{flt.week=e.target.value;limit=120;renderFind()});
