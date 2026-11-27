@@ -224,17 +224,17 @@ td.n,th.n{text-align:right;white-space:nowrap}
 select.acctx{width:auto;min-height:28px;padding:2px 22px 2px 8px;font-size:12.5px;border-radius:999px}
 #acctSave{min-width:72px}
 </style></head><body>
-<div id="lock" class="lock" hidden><form id="lockForm" class="lockcard"><h1 class="lockh">Camp Crew · Summer 2027</h1><p>This board is private to our group. Enter the crew code you were sent.</p><label>Crew code<input id="lockCode" autocomplete="off" autocapitalize="none" spellcheck="false" maxlength="60" required></label>
+<div id="lock" class="lock" hidden><form id="lockForm" class="lockcard"><h1 class="lockh">Camp Crew · Summer 2027</h1><p>Each crew's board is private. Enter the crew code your organizer sent you.</p><label>Crew code<input id="lockCode" autocomplete="off" autocapitalize="none" spellcheck="false" maxlength="60" required></label>
 <fieldset class="famsel"><legend>Your family</legend><label class="dchk"><input type="radio" name="famMode" value="have" checked> I have our family passcode</label><label class="dchk"><input type="radio" name="famMode" value="new"> We're new here</label></fieldset>
-<label id="famNameL" hidden>Family name<input id="famName" maxlength="40" placeholder="e.g. The Rohbins"></label>
+<label id="famNameL" hidden>Family name<input id="famName" maxlength="40" placeholder="e.g. The Garcias"></label>
 <label>Family passcode<input id="famPin" type="password" autocomplete="off" minlength="4" maxlength="40" required placeholder="At least 4 characters"></label>
 <p class="note" id="famHint">Your family passcode keeps your kids' picks yours. Use it on your phone and your computer.</p>
-<button type="submit" id="lockGo">Open the board</button><p id="lockMsg" class="note" role="status"></p><div class="lklinks"><button type="button" class="linkbtn" id="forgotOpen">Forgot your family passcode?</button><button type="button" class="linkbtn" id="crewOpen">Start a new crew</button></div><div id="crewBox" class="forgot" hidden><p class="note">Start your own private board for your friends and family. Everyone in a crew shares the same camp list; kids, picks and notes stay private to the crew. You need a setup code from Sarah.</p><label>Setup code<input id="ncSetup" autocomplete="off" autocapitalize="none" spellcheck="false" maxlength="60"></label><label>Crew name<input id="ncName" maxlength="40" placeholder="e.g. Fulton Friends"></label><label>Crew code (you'll share this with your group)<input id="ncCode" autocomplete="off" autocapitalize="none" spellcheck="false" minlength="6" maxlength="60" placeholder="At least 6 characters"></label><label>Your family name<input id="ncFam" maxlength="40" placeholder="e.g. The Smiths"></label><label>Your family passcode<input id="ncPin" type="password" autocomplete="new-password" minlength="4" maxlength="40" placeholder="At least 4 characters, kept private"></label><button type="button" id="ncGo" class="small">Create crew</button><p id="ncMsg" class="note" role="status"></p></div><div id="forgotBox" class="forgot" hidden><p class="note">Pick a new passcode. The crew organizer approves it, then you can sign in with it on any device. Your kids and picks stay as they are.</p><label>Family name (as you set it up)<input id="fgName" maxlength="40" placeholder="e.g. The Smiths"></label><label>New family passcode<input id="fgPin" type="password" autocomplete="new-password" minlength="4" maxlength="40" placeholder="At least 4 characters"></label><label>Note for the organizer (optional)<input id="fgNote" maxlength="200" placeholder="e.g. It's Jen, forgot ours"></label><button type="button" id="fgSend" class="small">Ask for a reset</button><p id="fgMsg" class="note" role="status"></p></div></form></div>
+<button type="submit" id="lockGo">Open the board</button><p id="lockMsg" class="note" role="status"></p><div class="lklinks"><button type="button" class="linkbtn" id="forgotOpen">Forgot your family passcode?</button><button type="button" class="linkbtn" id="crewOpen">Start a new crew</button></div><div id="crewBox" class="forgot" hidden><p class="note">Start your own private board for your friends and family. Everyone in a crew shares the same camp list; kids, picks and notes stay private to the crew. You need a setup code from the Camp Crew organizer.</p><label>Setup code<input id="ncSetup" autocomplete="off" autocapitalize="none" spellcheck="false" maxlength="60"></label><label>Crew name<input id="ncName" maxlength="40" placeholder="e.g. Fulton Friends"></label><label>Crew code (you'll share this with your group)<input id="ncCode" autocomplete="off" autocapitalize="none" spellcheck="false" minlength="6" maxlength="60" placeholder="At least 6 characters"></label><label>Your family name<input id="ncFam" maxlength="40" placeholder="e.g. The Smiths"></label><label>Your family passcode<input id="ncPin" type="password" autocomplete="new-password" minlength="4" maxlength="40" placeholder="At least 4 characters, kept private"></label><button type="button" id="ncGo" class="small">Create crew</button><p id="ncMsg" class="note" role="status"></p></div><div id="forgotBox" class="forgot" hidden><p class="note">Pick a new passcode. The crew organizer approves it, then you can sign in with it on any device. Your kids and picks stay as they are.</p><label>Family name (as you set it up)<input id="fgName" maxlength="40" placeholder="e.g. The Smiths"></label><label>New family passcode<input id="fgPin" type="password" autocomplete="new-password" minlength="4" maxlength="40" placeholder="At least 4 characters"></label><label>Note for the organizer (optional)<input id="fgNote" maxlength="200" placeholder="e.g. It's Jen, forgot ours"></label><button type="button" id="fgSend" class="small">Ask for a reset</button><p id="fgMsg" class="note" role="status"></p></div></form></div>
 <header class="band"><div class="wrap">
   <div class="toprow"><h1>Camp Crew<span class="yr"> · Summer 2027</span></h1><div class="topact"><details class="acct" id="acct" hidden><summary id="acctName"></summary><div class="acctm"><div class="accth"><button type="button" class="ghost small" id="acctClose" aria-label="Close without saving">✕ Close</button><b>Family settings</b><button type="button" class="small" id="acctSave">Save</button></div><p class="note" id="acctMsg" hidden></p><b class="acctt">Your kids</b><div id="acctKids"></div><button type="button" class="ghost small" data-addkid>+ Add a kid</button><hr><b class="acctt">Saved places <small class="note">(only your family sees these)</small></b><div id="acctPlaces"></div><div id="acctResets"></div><hr><div class="chpin"><button type="button" class="ghost small" id="chPinOpen">Change family passcode</button><div id="chPinBox" hidden><input id="chPin" type="password" autocomplete="new-password" minlength="4" maxlength="40" placeholder="New passcode (4+ characters)"><button type="button" class="small" id="chPinSave">Save</button></div><p class="note" id="chPinMsg"></p></div><p class="note">Signed in as this family on this device.</p><button type="button" class="ghost small" id="switchFam">Switch family</button></div></details><button type="button" id="reqOpen" class="reqbtn">+ Suggest a camp</button></div></div>
   <dialog id="reqDlg" class="reqdlg"><form id="reqForm" method="dialog">
     <h3 style="font-size:20px;margin:0 0 6px">Suggest a camp to add</h3>
-    <p class="note" style="margin:0 0 10px">Tell us what you found: a camp name, website link, week, price, anything you know. It gets looked up automatically, and every session that fits (9am–2pm or longer, under 20 min, takes 7-year-olds) is added within a day.</p>
+    <p class="note" style="margin:0 0 10px">Tell us what you found: a camp name, website link, week, price, anything you know. It gets looked up automatically, and every weekday summer session for ages 4–12 within about 30 minutes of central Howard County is added within a day. Use the filters to narrow it to your kids.</p>
     <label>Your name<input id="reqName" maxlength="40" placeholder="e.g. Jess"></label>
     <label>What did you find?<textarea id="reqText" rows="5" maxlength="440" placeholder="e.g. Lego robotics camp at Glenelg Country School, July, saw it on their site: https://..." required></textarea></label>
     <div class="row" style="justify-content:space-between;margin-top:10px"><button type="button" class="ghost small" id="reqManual">Or add the details myself</button><span class="row" style="gap:8px"><button type="button" class="ghost" id="reqCancel">Cancel</button><button type="submit" id="reqSend">Send request</button></span></div>
@@ -249,7 +249,7 @@ select.acctx{width:auto;min-height:28px;padding:2px 22px 2px 8px;font-size:12.5p
 </div></header>
 
 <main class="band"><div class="wrap">
-<script>window.addEventListener('error',function(e){var b=document.getElementById('status');if(b){b.hidden=false;b.textContent='Something broke on this page: '+(e.message||'unknown error')+'. Please send Sarah a screenshot.'}});</script>
+<script>window.addEventListener('error',function(e){var b=document.getElementById('status');if(b){b.hidden=false;b.textContent='Something broke on this page: '+(e.message||'unknown error')+'. Please send a screenshot to whoever invited you.'}});</script>
   <div id="status" class="banner" hidden></div>
   <div id="linkbox" class="panel" hidden></div>
   <div id="cmpbar" class="cmpbar" hidden><span id="cmpcount"></span><button type="button" id="cmpopen">Compare side by side</button><button type="button" class="ghost small" id="cmpclear">Clear</button></div>
@@ -258,9 +258,9 @@ select.acctx{width:auto;min-height:28px;padding:2px 22px 2px 8px;font-size:12.5p
   <form id="kidForm" class="panel grid" hidden>
     <label>Kid's first name<input id="kName" maxlength="40" required></label>
     <label>Home ZIP code<input id="kZip" inputmode="numeric" pattern="[0-9]{5}" maxlength="5" placeholder="e.g. 21044" required><small class="note">Drive times are estimated from here.</small></label>
-    <label>Age this summer<select id="kAge"></select></label>
-    <label>Care needed from<select id="kFrom"></select></label>
-    <label>Until<select id="kTo"></select></label>
+    <label>Age this summer<select id="kAge" required></select></label>
+    <label>Care needed from<select id="kFrom" required></select></label>
+    <label>Until<select id="kTo" required></select></label>
     <fieldset class="daysel"><legend>Days needed</legend><span id="kDays"></span></fieldset>
     <div class="row" style="align-self:end"><button type="submit" id="kSubmit">Add kid</button><button type="button" class="ghost" id="kCancel">Cancel</button></div>
   </form>
@@ -283,7 +283,7 @@ select.acctx{width:auto;min-height:28px;padding:2px 22px 2px 8px;font-size:12.5p
       <label>Provider<select id="fProv"><option value="">All providers</option></select></label>
       <label>Show<select id="fShow"><option value="">All camps</option><option value="new">New since last check</option><option value="mine">My kid's list</option><option value="picked">Has kids on it</option><option value="short">Standard day only</option><option value="fits">Fits my kid's needs</option><option value="sib">Same place as my other kids</option></select></label>
       <label id="fromL">Drive from<select id="fFrom"><option value="">Home</option></select></label>
-      <label id="driveL">Drive (est.)<select id="fDrive"><option value="20">20 min or less</option><option value="15">15 min or less</option><option value="10">10 min or less</option><option value="999">Any distance</option></select></label>
+      <label id="driveL">Drive (est.)<select id="fDrive"><option value="999">Any distance</option><option value="30">30 min or less</option><option value="20">20 min or less</option><option value="15">15 min or less</option><option value="10">10 min or less</option></select></label>
       <label>Sort<select id="fSort"><option value="week">By week</option><option value="camp">By camp (all its weeks)</option><option value="cost">Price, low to high</option><option value="drive">Closest first</option><option value="name">Name A–Z</option><option value="new">Newest added</option><option value="fit">Best fit for my kid</option><option value="sib">Same place as my other kids first</option></select></label>
     </div>
     <div class="chips info">
@@ -308,7 +308,7 @@ select.acctx{width:auto;min-height:28px;padding:2px 22px 2px 8px;font-size:12.5p
         <label>Cost per week ($)<input id="f-cost" type="number" min="0" step="1"></label>
         <label>Ages<input id="f-ages" maxlength="20"></label>
         <label>Location<input id="f-location" maxlength="80"></label>
-        <label>Drive from Clarksville (min)<input id="f-drive" type="number" min="0" step="1"></label>
+        <label>Est. drive (min)<input id="f-drive" type="number" min="0" step="1"></label>
         <label>Registration link (https://…)<input id="f-link" type="url" maxlength="300"></label>
       </div>
       <label style="margin-top:10px">Notes<textarea id="f-notes" rows="2" maxlength="300"></textarea></label>
@@ -330,7 +330,7 @@ select.acctx{width:auto;min-height:28px;padding:2px 22px 2px 8px;font-size:12.5p
   <section id="v-notes" hidden>
     <form id="noteForm" class="panel">
       <label>Your name<input id="noteName" maxlength="40" placeholder="So people know who posted"></label>
-      <label style="margin-top:10px">Post a note to the group<textarea id="noteText" rows="2" maxlength="500" placeholder="Need booking help for Pokémon week? Carpool to North Laurel Aug 3?"></textarea></label>
+      <label style="margin-top:10px">Post a note to the group<textarea id="noteText" rows="2" maxlength="500" placeholder="Anyone booking art camp in July? Carpool to North Laurel Aug 3?"></textarea></label>
       <div class="row" style="margin-top:10px"><button type="submit">Post</button></div>
     </form>
     <div id="notes"></div>
@@ -347,7 +347,7 @@ const STATUS={favorite:'★︎ Favorite',interested:'♥︎ Want to book',backup
 let kids=[],camps=[],picks=[],notes=[],deadlines=[],rules=[],cur=null,editing=null,busy=0,limit=120;
 let cmp=[];try{cmp=JSON.parse(localStorage.getItem('cc-cmp')||'[]')}catch(e){}
 const saveCmp=()=>{try{localStorage.setItem('cc-cmp',JSON.stringify(cmp))}catch(e){}};
-const flt={q:'',week:'',cat:'',prov:'',drive:20,from:'',sort:'week',chips:new Set()};
+const flt={q:'',week:'',cat:'',prov:'',drive:999,from:'',sort:'week',chips:new Set()};
 const ls={get:k=>{try{return localStorage.getItem(k)}catch(e){return null}},set:(k,v)=>{try{v?localStorage.setItem(k,v):localStorage.removeItem(k)}catch(e){}}};
 cur=ls.get('cc-kid');
 let CODE=ls.get('cc-crew')&&ls.get('cc-fam')?{c:ls.get('cc-crew'),f:ls.get('cc-fam')}:null;let MINE=[],ME=null;let pinned=[];
@@ -487,7 +487,7 @@ function filtered(){
   if(cur){const R={registered:0,interested:1,favorite:2,waitlist:3,backup:4};const pv=new Set(picks.filter(p=>p.kid===cur&&STATUS[p.status]).map(p=>(camps.find(c=>c.id===String(p.camp))||{}).provider).filter(Boolean));const rk=c=>{const p=pickFor(cur,c.id);return p&&p.status in R?R[p.status]:pv.has(c.provider)?5:9};list.sort((a,b)=>rk(a)-rk(b))}
   return list;
 }
-function renderFind(){queueSave();{const n=[flt.from,flt.q,flt.week,flt.cat,flt.prov,+flt.drive!==20,flt.conf,flt.chips.size,flt.sort!=='week'].filter(Boolean).length;$('#clrFlt').hidden=!(flt.from||flt.q||flt.week||flt.cat||flt.prov||+flt.drive!==20||flt.conf||flt.chips.size);document.querySelectorAll('.vfn').forEach(vn=>vn.textContent=n?' · '+n:'')}
+function renderFind(){queueSave();{const n=[flt.from,flt.q,flt.week,flt.cat,flt.prov,+flt.drive!==999,flt.conf,flt.chips.size,flt.sort!=='week'].filter(Boolean).length;$('#clrFlt').hidden=!(flt.from||flt.q||flt.week||flt.cat||flt.prov||+flt.drive!==999||flt.conf||flt.chips.size);document.querySelectorAll('.vfn').forEach(vn=>vn.textContent=n?' · '+n:'')}
   const list=filtered(),shown=list.slice(0,limit);
   $('#count').innerHTML=`${showHid?'Showing hidden camps':''}`+(hid.length?` <button type="button" class="ghost small" id="togHid">${showHid?'Back to all camps':'Show '+hid.length+' hidden'}</button>`:'');
   $('#more').hidden=list.length<=limit;
@@ -695,13 +695,13 @@ const dvSib=c=>{const sc=sibCamp(flt.from,c.wk);if(!sc)return '';if(sc.location=
 const dv=c=>{if(/^p\d$/.test(flt.from||'')){const i=+flt.from[1];const v=placeMap(i)[c.location];if(typeof v==='number'&&v>=0)return v;const pz=placeZip(i),lz=LOCZ[c.location];return pz&&lz&&ZIPLL[pz]&&ZIPLL[lz]?Math.round(4+1.04*kmBetween(ZIPLL[pz],ZIPLL[lz])):''}return flt.from&&MINE.includes(flt.from)&&flt.from!==cur?dvSib(c):dvHome(c)};
 const dvHome=c=>{{const m=placeMap(0);const v=m[c.location];if(typeof v==='number'&&v>=0)return v;const pz=placeZip(0);if(pz&&ZIPLL[pz]){const lz=LOCZ[c.location];if(lz&&ZIPLL[lz])return Math.round(4+1.04*kmBetween(ZIPLL[pz],ZIPLL[lz]))}}const z=kprof&&kprof.zip;if(!z||!ZIPLL[z])return '';if(z==='21029')return c.drive;const lz=LOCZ[c.location];if(!lz||!ZIPLL[lz])return '';return Math.round(4+1.04*kmBetween(ZIPLL[z],ZIPLL[lz]))};
 const fromWhere=()=>/^p\d$/.test(flt.from||'')?((myPlaces()[+flt.from[1]]||{}).label||'there'):flt.from&&flt.from!==cur&&MINE.includes(flt.from)?((kids.find(k=>k.id===flt.from)||{}).name||'')+"'s camp":kprof&&kprof.zip&&ZIPLL[kprof.zip]?kprof.zip:'home';
-const DEFPROF={zip:'',age:7,from:9,to:14,days:['M','Tu','W','Th','F']};
+const DEFPROF={zip:'',age:'',from:'',to:'',days:['M','Tu','W','Th','F']};
 function sibMatch(c){if(!cur)return [];const out=[];for(const p of picks){if(!STATUS[p.status]||p.kid===cur||!MINE.includes(p.kid))continue;const pc=camps.find(x=>x.id===String(p.camp));if(!pc||pc.wk!==c.wk||pc.location!==c.location)continue;const k=kids.find(x=>x.id===p.kid);if(!k)continue;out.push({name:k.name,same:pc.id===c.id,hours:pc.hours===c.hours})}return out}
 function fitIssues(c,p){if(!p)return [];const out=[];if(!c.hours)out.push('hours not listed');const a=ageOf(c);if(a&&(p.age<a[0]||p.age>a[1]))out.push(`ages ${a[0]}–${a[1]}`);const [st,en]=hrsOf(c);if(st!=null&&st>p.from)out.push(`starts ${fmtH(st)}`);if(en!=null&&en<p.to)out.push(`ends ${fmtH(en)}`);const d=parseDays(c.days);const miss=p.days.filter(x=>!d.has(x));if(d.size&&miss.length)out.push(`no ${miss.map(x=>({M:'Mon',Tu:'Tue',W:'Wed',Th:'Thu',F:'Fri'})[x]).join(', ')}`);return out}
 let prefs={},loadedFor=null,lastSaved='',saveT=null;
 let EXEC='';
 function prefState(){return JSON.stringify({k:kprof,h:hid,g:gchk,r:rnk,x:kx?1:0,col:kcol,cv:cvCur||undefined,f:{q:flt.q,week:flt.week,cat:flt.cat,prov:flt.prov,drive:flt.drive,sort:flt.sort,conf:!!flt.conf,from:flt.from||'',show:[...flt.chips][0]||''},cmp})}
-function loadPrefs(k){loadedFor=k;kprof=null;hid=[];gchk={};rnk={};kx=false;kcol='';cvCur=null;const raw=prefs[k];if(!raw)return;try{const p=JSON.parse(raw);kprof=p.k||null;hid=Array.isArray(p.h)?p.h:[];gchk=p.g&&typeof p.g==='object'?p.g:{};rnk=p.r&&typeof p.r==='object'?p.r:{};kx=!!p.x;kcol=typeof p.col==='string'?p.col:'';cvCur=p.cv&&Array.isArray(p.cv.o)?p.cv:null;const f=p.f||{};Object.assign(flt,{q:f.q||'',week:f.week||'',cat:f.cat||'',prov:f.prov||'',drive:f.drive||20,sort:f.sort||'week',conf:!!f.conf,from:f.from||'',chips:new Set(f.show?[f.show]:[])});cmp=Array.isArray(p.cmp)?p.cmp:[];saveCmp();lastSaved=raw;
+function loadPrefs(k){loadedFor=k;kprof=null;hid=[];gchk={};rnk={};kx=false;kcol='';cvCur=null;const raw=prefs[k];if(!raw)return;try{const p=JSON.parse(raw);kprof=p.k||null;hid=Array.isArray(p.h)?p.h:[];gchk=p.g&&typeof p.g==='object'?p.g:{};rnk=p.r&&typeof p.r==='object'?p.r:{};kx=!!p.x;kcol=typeof p.col==='string'?p.col:'';cvCur=p.cv&&Array.isArray(p.cv.o)?p.cv:null;const f=p.f||{};Object.assign(flt,{q:f.q||'',week:f.week||'',cat:f.cat||'',prov:f.prov||'',drive:f.drive||999,sort:f.sort||'week',conf:!!f.conf,from:f.from||'',chips:new Set(f.show?[f.show]:[])});cmp=Array.isArray(p.cmp)?p.cmp:[];saveCmp();lastSaved=raw;
   $('#q').value=flt.q;$('#fDrive').value=String(flt.drive);$('#fSort').value=flt.sort;$('#fShow').value=f.show||'';$('#confOnly').checked=!!flt.conf}catch(e){}}
 function queueSave(){if(!cur||loadedFor!==cur||!mine(cur))return;clearTimeout(saveT);saveT=setTimeout(async()=>{const st=prefState();if(st===lastSaved)return;try{await call('savePrefs',cur,st,KEYS[cur]);lastSaved=st;prefs[cur]=st;const n=$('#savedNote');if(n){n.textContent='Saved ✓';setTimeout(()=>{n.textContent=''},2000)}}catch(e){}},1200)}
 function apply(d){
@@ -756,13 +756,13 @@ $('#fDrive').addEventListener('change',e=>{flt.drive=+e.target.value;renderFind(
 $('#fSort').addEventListener('change',e=>{flt.sort=e.target.value;renderFind()});
 $('#fProv').addEventListener('change',e=>{flt.prov=e.target.value;limit=120;renderFind()});$('#fFrom').addEventListener('change',e=>{flt.from=e.target.value;limit=120;renderFind()});$('#fShow').addEventListener('change',e=>{flt.chips=new Set(e.target.value?[e.target.value]:[]);limit=120;renderFind()});
 $('#more').addEventListener('click',()=>{limit+=120;renderFind()});
-$('#clrFlt').addEventListener('click',()=>{Object.assign(flt,{q:'',week:'',cat:'',prov:'',drive:20,from:'',conf:false,chips:new Set()});$('#q').value='';$('#fWeek').value='';$('#fCat').value='';$('#fProv').value='';$('#fDrive').value='20';$('#fFrom').value='';$('#fShow').value='';$('#confOnly').checked=false;limit=120;renderFind()});
+$('#clrFlt').addEventListener('click',()=>{Object.assign(flt,{q:'',week:'',cat:'',prov:'',drive:999,from:'',conf:false,chips:new Set()});$('#q').value='';$('#fWeek').value='';$('#fCat').value='';$('#fProv').value='';$('#fDrive').value='999';$('#fFrom').value='';$('#fShow').value='';$('#confOnly').checked=false;limit=120;renderFind()});
 $('#kids').addEventListener('click',e=>{
   if(e.target.closest('#addKid')){openNeeds(false);$('#kName').focus();return}
   const b=e.target.closest('[data-kid]');if(!b)return;cur=b.dataset.kid===cur?null:b.dataset.kid;ls.set('cc-kid',cur);if(cur){$('#gKid').value=cur;loadPrefs(cur);fillSelects()}render();
 });
 $('#kCancel').addEventListener('click',()=>{$('#kidForm').hidden=true});
-(function(){let a='';for(let i=3;i<=14;i++)a+=`<option value="${i}">${i}</option>`;$('#kAge').innerHTML=a;let f='',t='';for(let h=7;h<=10;h+=.5)f+=`<option value="${h}">${fmtH(h)}</option>`;for(let h=12;h<=18;h+=.5)t+=`<option value="${h}">${fmtH(h)}</option>`;$('#kFrom').innerHTML=f;$('#kTo').innerHTML=t;$('#kDays').innerHTML=DAYS.map(d=>`<label class="dchk"><input type="checkbox" value="${d}" checked>${d}</label>`).join('')})();
+(function(){let a='<option value="">Choose age</option>';for(let i=3;i<=14;i++)a+=`<option value="${i}">${i}</option>`;$('#kAge').innerHTML=a;let f='<option value="">Choose time</option>',t='<option value="">Choose time</option>';for(let h=7;h<=10;h+=.5)f+=`<option value="${h}">${fmtH(h)}</option>`;for(let h=12;h<=18;h+=.5)t+=`<option value="${h}">${fmtH(h)}</option>`;$('#kFrom').innerHTML=f;$('#kTo').innerHTML=t;$('#kDays').innerHTML=DAYS.map(d=>`<label class="dchk"><input type="checkbox" value="${d}" checked>${d}</label>`).join('')})();
 let editingNeeds=false;
 function fillNeeds(p){p=p||DEFPROF;$('#kZip').value=p.zip||ls.get('cc-zip')||'';$('#kAge').value=String(p.age);$('#kFrom').value=String(p.from);$('#kTo').value=String(p.to);document.querySelectorAll('#kDays input').forEach(x=>x.checked=p.days.includes(x.value))}
 function readNeeds(){return {zip:($('#kZip').value||'').trim().slice(0,5),age:+$('#kAge').value,from:+$('#kFrom').value,to:+$('#kTo').value,days:[...document.querySelectorAll('#kDays input:checked')].map(x=>x.value)}}
